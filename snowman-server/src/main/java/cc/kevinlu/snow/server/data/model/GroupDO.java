@@ -9,7 +9,7 @@ import lombok.ToString;
 
 /**
 * @author chuan
-* @time 2021-04-26
+* @time 2021-04-27
 */
 @Data
 @ToString
@@ -20,6 +20,11 @@ public class GroupDO implements Serializable {
      * id
      */
     private Long id;
+
+    /**
+     * 服务名称
+     */
+    private String name;
 
     /**
      * 服务组编号
@@ -55,6 +60,7 @@ public class GroupDO implements Serializable {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
+        sb.append(", name=").append(name);
         sb.append(", groupCode=").append(groupCode);
         sb.append(", chunk=").append(chunk);
         sb.append(", lastValue=").append(lastValue);

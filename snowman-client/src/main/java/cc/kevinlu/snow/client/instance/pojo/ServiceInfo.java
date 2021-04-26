@@ -3,8 +3,10 @@ package cc.kevinlu.snow.client.instance.pojo;
 import java.io.Serializable;
 import java.util.List;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
+import lombok.experimental.Tolerate;
 
 /**
  * service base info
@@ -35,7 +37,10 @@ public class ServiceInfo implements Serializable {
      * 
      * @author chuan 
      */
-    protected static class InstanceInfo implements Serializable {
+    @Data
+    @ToString
+    @Builder
+    public static class InstanceInfo implements Serializable {
 
         /**
          * instance's code
@@ -56,6 +61,10 @@ public class ServiceInfo implements Serializable {
          * the max value of the last call
          */
         private Long    lastToValue;
+
+        @Tolerate
+        public InstanceInfo() {
+        }
     }
 
 }
