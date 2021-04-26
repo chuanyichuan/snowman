@@ -1,8 +1,5 @@
 package cc.kevinlu.snow.client.instance;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,8 +37,8 @@ public interface ServiceInstanceClient {
      * @return
      */
     @PostMapping(value = "/query_service_instances", consumes = MediaType.APPLICATION_JSON_VALUE)
-    default List<ServiceInfo> services(@RequestBody ServiceQuery params) {
-        return new ArrayList<>();
+    default ServiceInfo services(@RequestBody ServiceQuery params) {
+        return null;
     }
 
 }

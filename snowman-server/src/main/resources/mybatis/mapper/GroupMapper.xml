@@ -3,6 +3,7 @@
 <mapper namespace="cc.kevinlu.snow.server.data.mapper.GroupMapper">
   <resultMap id="BaseResultMap" type="cc.kevinlu.snow.server.data.model.GroupDO">
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="group_code" jdbcType="VARCHAR" property="groupCode" />
     <result column="chunk" jdbcType="INTEGER" property="chunk" />
     <result column="last_value" jdbcType="BIGINT" property="lastValue" />
@@ -68,7 +69,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, group_code, chunk, last_value, gmt_created, gmt_updated
+    id, name, group_code, chunk, last_value, gmt_created, gmt_updated
   </sql>
   <select id="selectByExample" parameterType="cc.kevinlu.snow.server.data.model.GroupDOExample" resultMap="BaseResultMap">
     select
@@ -105,10 +106,12 @@
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into sm_group (group_code, chunk, last_value, 
-      gmt_created, gmt_updated)
-    values (#{groupCode,jdbcType=VARCHAR}, #{chunk,jdbcType=INTEGER}, #{lastValue,jdbcType=BIGINT}, 
-      #{gmtCreated,jdbcType=TIMESTAMP}, #{gmtUpdated,jdbcType=TIMESTAMP})
+    insert into sm_group (name, group_code, chunk, 
+      last_value, gmt_created, gmt_updated
+      )
+    values (#{name,jdbcType=VARCHAR}, #{groupCode,jdbcType=VARCHAR}, #{chunk,jdbcType=INTEGER}, 
+      #{lastValue,jdbcType=BIGINT}, #{gmtCreated,jdbcType=TIMESTAMP}, #{gmtUpdated,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="cc.kevinlu.snow.server.data.model.GroupDO">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
@@ -116,6 +119,9 @@
     </selectKey>
     insert into sm_group
     <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        name,
+      </if>
       <if test="groupCode != null">
         group_code,
       </if>
@@ -133,6 +139,9 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
       <if test="groupCode != null">
         #{groupCode,jdbcType=VARCHAR},
       </if>
@@ -162,6 +171,9 @@
       <if test="record.id != null">
         id = #{record.id,jdbcType=BIGINT},
       </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
       <if test="record.groupCode != null">
         group_code = #{record.groupCode,jdbcType=VARCHAR},
       </if>
@@ -185,6 +197,7 @@
   <update id="updateByExample" parameterType="map">
     update sm_group
     set id = #{record.id,jdbcType=BIGINT},
+      name = #{record.name,jdbcType=VARCHAR},
       group_code = #{record.groupCode,jdbcType=VARCHAR},
       chunk = #{record.chunk,jdbcType=INTEGER},
       last_value = #{record.lastValue,jdbcType=BIGINT},
@@ -197,6 +210,9 @@
   <update id="updateByPrimaryKeySelective" parameterType="cc.kevinlu.snow.server.data.model.GroupDO">
     update sm_group
     <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
       <if test="groupCode != null">
         group_code = #{groupCode,jdbcType=VARCHAR},
       </if>
@@ -217,7 +233,8 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="cc.kevinlu.snow.server.data.model.GroupDO">
     update sm_group
-    set group_code = #{groupCode,jdbcType=VARCHAR},
+    set name = #{name,jdbcType=VARCHAR},
+      group_code = #{groupCode,jdbcType=VARCHAR},
       chunk = #{chunk,jdbcType=INTEGER},
       last_value = #{lastValue,jdbcType=BIGINT},
       gmt_created = #{gmtCreated,jdbcType=TIMESTAMP},
