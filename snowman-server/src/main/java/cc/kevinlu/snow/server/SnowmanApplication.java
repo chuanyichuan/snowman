@@ -5,13 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 
-@SpringBootApplication(scanBasePackages = { "com.cmss.open.api" })
+@SpringBootApplication(scanBasePackages = { "cc.kevinlu.snow.server" })
 @EnableDiscoveryClient
 @RefreshScope
-public class CodeApiApplication {
+public class SnowmanApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CodeApiApplication.class, args);
+        SpringApplication.run(SnowmanApplication.class, args);
     }
 
 }

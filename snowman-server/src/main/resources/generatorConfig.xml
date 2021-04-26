@@ -10,7 +10,7 @@
     <!-- 本地数据库驱动程序jar包的全路径 -->
     <classPathEntry location="/"/>
 
-    <context id="open-api" targetRuntime="Mybatis3" defaultModelType="flat">
+    <context id="snowman" targetRuntime="Mybatis3" defaultModelType="flat">
 
         <plugin type="cc.kevinlu.snow.server.config.mybatis.LombokPlugin"/>
         <plugin type="cc.kevinlu.snow.server.config.mybatis.MybatisOverIsMergeablePlugin"/>
@@ -32,15 +32,31 @@
         <javaTypeResolver type="cc.kevinlu.snow.server.config.mybatis.JavaTypeResolverImpl"/>
 
         <!-- 实体类生成的位置 -->
-        <javaModelGenerator targetPackage="com.cmss.open.api.data.model"
+        <javaModelGenerator targetPackage="cc.kevinlu.snow.server.data.model"
                             targetProject="${datasource.dir}/src/main/java"/>
         <sqlMapGenerator targetPackage="mybatis.mapper" targetProject="${datasource.dir}/src/main/resources"/>
 
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.cmss.open.api.data.mapper"
+        <javaClientGenerator type="XMLMAPPER" targetPackage="cc.kevinlu.snow.server.data.mapper"
                              targetProject="${datasource.dir}/src/main/java"/>
 
-        <table tableName="abc" domainObjectName="AbcDO"
-               mapperName="AbcMapper"
+        <table tableName="sm_group" domainObjectName="GroupDO"
+               mapperName="GroupMapper"
+               enableCountByExample="true"
+               enableDeleteByExample="true" enableInsert="true" enableSelectByExample="true"
+               enableUpdateByExample="true"
+               selectByExampleQueryId="true" enableSelectByPrimaryKey="true">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="sm_service_instance" domainObjectName="ServiceInstanceDO"
+               mapperName="ServiceInstanceMapper"
+               enableCountByExample="true"
+               enableDeleteByExample="true" enableInsert="true" enableSelectByExample="true"
+               enableUpdateByExample="true"
+               selectByExampleQueryId="true" enableSelectByPrimaryKey="true">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="sm_snowflake" domainObjectName="SnowflakeDO"
+               mapperName="SnowflakeMapper"
                enableCountByExample="true"
                enableDeleteByExample="true" enableInsert="true" enableSelectByExample="true"
                enableUpdateByExample="true"

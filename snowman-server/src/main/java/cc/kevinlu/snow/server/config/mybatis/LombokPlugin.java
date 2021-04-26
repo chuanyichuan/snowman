@@ -35,7 +35,7 @@ public class LombokPlugin extends PluginAdapter {
 
         //添加domain的注释
         topLevelClass.addJavaDocLine("/**");
-        topLevelClass.addJavaDocLine("* @author lucunyu");
+        topLevelClass.addJavaDocLine("* @author chuan");
         topLevelClass.addJavaDocLine("* @time " + date2Str(new Date()));
         topLevelClass.addJavaDocLine("*/");
 
@@ -47,7 +47,7 @@ public class LombokPlugin extends PluginAdapter {
                                    IntrospectedTable introspectedTable) {
         //Mapper文件的注释
         interfaze.addJavaDocLine("/**");
-        interfaze.addJavaDocLine("* @author lucunyu");
+        interfaze.addJavaDocLine("* @author chuan");
         interfaze.addJavaDocLine("* @time " + date2Str(new Date()));
         interfaze.addJavaDocLine("*/");
         return true;
