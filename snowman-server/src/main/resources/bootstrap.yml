@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    inetutils:
+      ignored-interfaces: docker0
+    nacos:
+      discovery:
+        server-addr: @nacos.url@
+        namespace: @profiles.active@
+        ip: @discovery.ip@
+        metadata:
+          management:
+            context-path: oai/actuator
+      config:
+        server-addr: @nacos.url@
+        file-extension: yaml
+        name: open_api
+        namespace: @profiles.active@
