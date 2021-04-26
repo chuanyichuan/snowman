@@ -2,13 +2,23 @@ package cc.kevinlu.snow.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import lombok.Data;
+import lombok.ToString;
+
 /**
  * snowman配置项
  * 
  * @author chuan
  */
+@Data
+@ToString
 @ConfigurationProperties(prefix = SnowmanConstants.CONFIG_PREFIX)
 public class SnowmanProperties {
+
+    /**
+     * 项目名称
+     */
+    private String name;
 
     /**
      * snowman服务地址,默认localhost
@@ -45,66 +55,4 @@ public class SnowmanProperties {
      */
     private String serverId;
 
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public int getChunk() {
-        return chunk;
-    }
-
-    public void setChunk(int chunk) {
-        this.chunk = chunk;
-    }
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
-
-    public String getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
-
-    public String getServerId() {
-        return serverId;
-    }
-
-    public void setServerId(String serverId) {
-        this.serverId = serverId;
-    }
-
-    @Override
-    public String toString() {
-        return "SnowmanProperties{" + "host='" + host + '\'' + ", port=" + port + ", path='" + path + '\'' + ", chunk="
-                + chunk + ", timeout=" + timeout + ", groupId='" + groupId + '\'' + ", serverId='" + serverId + '\''
-                + '}';
-    }
 }

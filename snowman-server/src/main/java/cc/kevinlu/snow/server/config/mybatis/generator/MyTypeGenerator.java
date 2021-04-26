@@ -10,7 +10,7 @@ import org.mybatis.generator.config.xml.ConfigurationParser;
 import org.mybatis.generator.internal.DefaultShellCallback;
 
 /**
- * @author lucunyu
+ * @author chuan
  */
 public class MyTypeGenerator {
 
@@ -18,7 +18,7 @@ public class MyTypeGenerator {
         List<String> warnings = new ArrayList<>();
         try {
             String configFilePath = System.getProperty("user.dir")
-                    .concat("\\open-api-server\\src\\main\\resources\\generatorConfig.xml");
+                    .concat("/snowman-server/src/main/resources/generatorConfig.xml");
             System.out.println("加载配置文件===" + configFilePath);
             boolean overwrite = true;
             File configFile = new File(configFilePath);
