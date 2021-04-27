@@ -20,15 +20,41 @@ public class GenerateAlgorithmFactory {
     @Autowired
     private AlgorithmProcessor algorithmProcessor;
 
+    private DigitAlgorithm     digitAlgorithm;
+    private SnowflakeAlgorithm snowflakeAlgorithm;
+    private UuidAlgorithm      uuidAlgorithm;
+    private Object[]           lockObjs = new Object[] { new Object(), new Object(), new Object() };
+
     public AbstractAlgorithm factory(Integer mode) {
         IdAlgorithmEnums algorithm = IdAlgorithmEnums.getEnumByAlgorithm(mode);
         switch (algorithm) {
             case SNOWFLAKE:
-                return new SnowflakeAlgorithm(algorithmProcessor);
+                if (snowflakeAlgorithm == null) {
+                    synchronized (lockObjs[0]) {
+                        if (snowflakeAlgorithm == null) {
+                            snowflakeAlgorithm = new SnowflakeAlgorithm(algorithmProcessor);
+                        }
+                    }
+                }
+                return snowflakeAlgorithm;
             case UUID:
-                return new UuidAlgorithm(algorithmProcessor);
+                if (uuidAlgorithm == null) {
+                    synchronized (lockObjs[1]) {
+                        if (uuidAlgorithm == null) {
+                            uuidAlgorithm = new UuidAlgorithm(algorithmProcessor);
+                        }
+                    }
+                }
+                return uuidAlgorithm;
             default:
-                return new DigitAlgorithm(algorithmProcessor);
+                if (digitAlgorithm == null) {
+                    synchronized (lockObjs[2]) {
+                        if (digitAlgorithm == null) {
+                            digitAlgorithm = new DigitAlgorithm(algorithmProcessor);
+                        }
+                    }
+                }
+                return digitAlgorithm;
         }
     }
 

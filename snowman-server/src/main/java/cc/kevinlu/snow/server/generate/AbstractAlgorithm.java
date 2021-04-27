@@ -3,6 +3,7 @@ package cc.kevinlu.snow.server.generate;
 import java.util.ArrayList;
 import java.util.List;
 
+import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.client.exceptions.ParamIllegalException;
 import cc.kevinlu.snow.client.exceptions.ValueTooBigException;
 import cc.kevinlu.snow.server.data.model.GroupDO;
@@ -33,11 +34,14 @@ public abstract class AbstractAlgorithm<T> {
      * @return
      */
     private Long fromValue(GroupDO group) {
-        long lastValue = group.getLastValue();
-        if (lastValue >= Long.MAX_VALUE - group.getChunk()) {
-            throw new ValueTooBigException("ID has been used up!");
+        if (IdAlgorithmEnums.DIGIT.getAlgorithm() == group.getMode()) {
+            long lastValue = Long.parseLong(group.getLastValue());
+            if (lastValue >= Long.MAX_VALUE - group.getChunk()) {
+                throw new ValueTooBigException("ID has been used up!");
+            }
+            return lastValue + 1L;
         }
-        return lastValue + 1L;
+        return 0L;
     }
 
     /**
@@ -70,6 +74,7 @@ public abstract class AbstractAlgorithm<T> {
         generateDistributedId(idList, group.getId(), instanceId, fromValue, chunk);
         persistentDB(instanceId, idList);
         recordSnowTimes(instanceId);
+        recordLastValue(group.getId(), idList.get(idList.size() - 1));
         return idList;
     }
 
@@ -92,6 +97,16 @@ public abstract class AbstractAlgorithm<T> {
      * @param idList
      */
     protected abstract void persistentDB(long instanceId, List<T> idList);
+
+    /**
+     * record last value
+     * 
+     * @param id
+     * @param value
+     */
+    protected void recordLastValue(Long id, T value) {
+        algorithmProcessor.recordGroupLastValue(id, String.valueOf(value));
+    }
 
     /**
      * record times

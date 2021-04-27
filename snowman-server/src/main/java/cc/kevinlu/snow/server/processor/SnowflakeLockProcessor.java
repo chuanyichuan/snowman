@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.nacos.common.utils.ConcurrentHashSet;
 
+import cc.kevinlu.snow.server.config.Constants;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -18,9 +19,7 @@ public class SnowflakeLockProcessor {
     /**
      * groupCode cache set
      */
-    private volatile Set<String> groupCodeSet    = new ConcurrentHashSet<>();
-
-    public static final Long     DEFAULT_TIMEOUT = 3000L;
+    private volatile Set<String> groupCodeSet = new ConcurrentHashSet<>();
 
     /**
      * release lock
@@ -40,7 +39,7 @@ public class SnowflakeLockProcessor {
      */
     public boolean tryLock(String groupCode, long timeout) {
         if (timeout <= 0L) {
-            timeout = DEFAULT_TIMEOUT;
+            timeout = Constants.DEFAULT_TIMEOUT;
         }
         long startTime = System.currentTimeMillis();
         while ((System.currentTimeMillis() - startTime) < timeout) {

@@ -435,52 +435,62 @@ public class GroupDOExample {
             return (Criteria) this;
         }
 
-        public Criteria andLastValueEqualTo(Long value) {
+        public Criteria andLastValueEqualTo(String value) {
             addCriterion("last_value =", value, "lastValue");
             return (Criteria) this;
         }
 
-        public Criteria andLastValueNotEqualTo(Long value) {
+        public Criteria andLastValueNotEqualTo(String value) {
             addCriterion("last_value <>", value, "lastValue");
             return (Criteria) this;
         }
 
-        public Criteria andLastValueGreaterThan(Long value) {
+        public Criteria andLastValueGreaterThan(String value) {
             addCriterion("last_value >", value, "lastValue");
             return (Criteria) this;
         }
 
-        public Criteria andLastValueGreaterThanOrEqualTo(Long value) {
+        public Criteria andLastValueGreaterThanOrEqualTo(String value) {
             addCriterion("last_value >=", value, "lastValue");
             return (Criteria) this;
         }
 
-        public Criteria andLastValueLessThan(Long value) {
+        public Criteria andLastValueLessThan(String value) {
             addCriterion("last_value <", value, "lastValue");
             return (Criteria) this;
         }
 
-        public Criteria andLastValueLessThanOrEqualTo(Long value) {
+        public Criteria andLastValueLessThanOrEqualTo(String value) {
             addCriterion("last_value <=", value, "lastValue");
             return (Criteria) this;
         }
 
-        public Criteria andLastValueIn(List<Long> values) {
+        public Criteria andLastValueLike(String value) {
+            addCriterion("last_value like", value, "lastValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastValueNotLike(String value) {
+            addCriterion("last_value not like", value, "lastValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastValueIn(List<String> values) {
             addCriterion("last_value in", values, "lastValue");
             return (Criteria) this;
         }
 
-        public Criteria andLastValueNotIn(List<Long> values) {
+        public Criteria andLastValueNotIn(List<String> values) {
             addCriterion("last_value not in", values, "lastValue");
             return (Criteria) this;
         }
 
-        public Criteria andLastValueBetween(Long value1, Long value2) {
+        public Criteria andLastValueBetween(String value1, String value2) {
             addCriterion("last_value between", value1, value2, "lastValue");
             return (Criteria) this;
         }
 
-        public Criteria andLastValueNotBetween(Long value1, Long value2) {
+        public Criteria andLastValueNotBetween(String value1, String value2) {
             addCriterion("last_value not between", value1, value2, "lastValue");
             return (Criteria) this;
         }
