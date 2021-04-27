@@ -10,11 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cc.kevinlu.snow.server.data.mapper.GroupMapper;
 import cc.kevinlu.snow.server.data.mapper.ServiceInstanceMapper;
-import cc.kevinlu.snow.server.data.mapper.SnowflakeMapper;
 import cc.kevinlu.snow.server.data.model.GroupDO;
 import cc.kevinlu.snow.server.data.model.GroupDOExample;
-import cc.kevinlu.snow.server.data.model.ServiceInstanceDO;
-import cc.kevinlu.snow.server.data.model.SnowflakeDO;
 import cc.kevinlu.snow.server.generate.GenerateAlgorithmFactory;
 import cc.kevinlu.snow.server.processor.InstanceCacheProcessor;
 import cc.kevinlu.snow.server.processor.SnowflakeLockProcessor;
@@ -31,8 +28,6 @@ public class SnowflakeServiceImpl implements SnowflakeService {
 
     @Autowired
     private GroupMapper              groupMapper;
-    @Autowired
-    private SnowflakeMapper          snowflakeMapper;
     @Autowired
     private ServiceInstanceMapper    serviceInstanceMapper;
     @Autowired
@@ -70,7 +65,6 @@ public class SnowflakeServiceImpl implements SnowflakeService {
             int chunk = group.getChunk();
             long lastValue = group.getLastValue();
 
-            long fromValue = lastValue + 1;
             long toValue = lastValue + chunk;
             // update database
             group.setLastValue(toValue);
@@ -78,18 +72,6 @@ public class SnowflakeServiceImpl implements SnowflakeService {
             groupMapper.updateByPrimaryKeySelective(group);
 
             long instanceId = instanceCacheProcessor.getInstanceId(group.getId(), instanceCode);
-
-            SnowflakeDO snowflake = new SnowflakeDO();
-            snowflake.setChunk(chunk);
-            snowflake.setServiceInstanceId(instanceId);
-            snowflake.setFromValue(fromValue);
-            snowflake.setToValue(toValue);
-            snowflakeMapper.insertSelective(snowflake);
-
-            ServiceInstanceDO instance = serviceInstanceMapper.selectByPrimaryKey(instanceId);
-            instance.setSnowTimes(instance.getSnowTimes() + 1);
-            instance.setGmtUpdated(new Date());
-            serviceInstanceMapper.updateByPrimaryKeySelective(instance);
 
             return result;
         } catch (Exception e) {

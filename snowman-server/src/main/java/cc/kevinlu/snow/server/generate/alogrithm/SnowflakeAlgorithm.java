@@ -3,7 +3,7 @@ package cc.kevinlu.snow.server.generate.alogrithm;
 import java.util.List;
 
 import cc.kevinlu.snow.server.generate.AbstractAlgorithm;
-import cc.kevinlu.snow.server.processor.InstanceCacheProcessor;
+import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import cc.kevinlu.snow.server.utils.SnowflakeIdWorker;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,8 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SnowflakeAlgorithm extends AbstractAlgorithm<Long> {
 
-    public SnowflakeAlgorithm(InstanceCacheProcessor instanceCacheProcessor) {
-        super(instanceCacheProcessor);
+    public SnowflakeAlgorithm(AlgorithmProcessor algorithmProcessor) {
+        super(algorithmProcessor);
     }
 
     @Override
@@ -26,5 +26,10 @@ public class SnowflakeAlgorithm extends AbstractAlgorithm<Long> {
         for (int i = 0; i < chunk; i++) {
             idList.add(worker.nextId());
         }
+    }
+
+    @Override
+    protected void persistentDB(long instanceId, List<Long> idList) {
+        algorithmProcessor.persistentSnowflake(instanceId, idList);
     }
 }

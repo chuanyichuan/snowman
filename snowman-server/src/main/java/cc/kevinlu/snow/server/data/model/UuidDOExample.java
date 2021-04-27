@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SnowflakeDOExample {
+public class UuidDOExample {
     protected String orderByClause;
 
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;
 
-    public SnowflakeDOExample() {
+    public UuidDOExample() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
@@ -295,52 +295,62 @@ public class SnowflakeDOExample {
             return (Criteria) this;
         }
 
-        public Criteria andGValueEqualTo(Long value) {
+        public Criteria andGValueEqualTo(String value) {
             addCriterion("g_value =", value, "gValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueNotEqualTo(Long value) {
+        public Criteria andGValueNotEqualTo(String value) {
             addCriterion("g_value <>", value, "gValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueGreaterThan(Long value) {
+        public Criteria andGValueGreaterThan(String value) {
             addCriterion("g_value >", value, "gValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueGreaterThanOrEqualTo(Long value) {
+        public Criteria andGValueGreaterThanOrEqualTo(String value) {
             addCriterion("g_value >=", value, "gValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueLessThan(Long value) {
+        public Criteria andGValueLessThan(String value) {
             addCriterion("g_value <", value, "gValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueLessThanOrEqualTo(Long value) {
+        public Criteria andGValueLessThanOrEqualTo(String value) {
             addCriterion("g_value <=", value, "gValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueIn(List<Long> values) {
+        public Criteria andGValueLike(String value) {
+            addCriterion("g_value like", value, "gValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andGValueNotLike(String value) {
+            addCriterion("g_value not like", value, "gValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andGValueIn(List<String> values) {
             addCriterion("g_value in", values, "gValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueNotIn(List<Long> values) {
+        public Criteria andGValueNotIn(List<String> values) {
             addCriterion("g_value not in", values, "gValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueBetween(Long value1, Long value2) {
+        public Criteria andGValueBetween(String value1, String value2) {
             addCriterion("g_value between", value1, value2, "gValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueNotBetween(Long value1, Long value2) {
+        public Criteria andGValueNotBetween(String value1, String value2) {
             addCriterion("g_value not between", value1, value2, "gValue");
             return (Criteria) this;
         }

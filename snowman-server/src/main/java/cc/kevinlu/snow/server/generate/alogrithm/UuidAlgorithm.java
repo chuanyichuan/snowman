@@ -5,7 +5,7 @@ import java.util.List;
 import com.alibaba.nacos.common.utils.UuidUtils;
 
 import cc.kevinlu.snow.server.generate.AbstractAlgorithm;
-import cc.kevinlu.snow.server.processor.InstanceCacheProcessor;
+import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -14,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UuidAlgorithm extends AbstractAlgorithm<String> {
 
-    public UuidAlgorithm(InstanceCacheProcessor instanceCacheProcessor) {
-        super(instanceCacheProcessor);
+    public UuidAlgorithm(AlgorithmProcessor algorithmProcessor) {
+        super(algorithmProcessor);
     }
 
     @Override
@@ -24,5 +24,10 @@ public class UuidAlgorithm extends AbstractAlgorithm<String> {
         for (int i = 0; i < chunk; i++) {
             idList.add(UuidUtils.generateUuid().replaceAll("-", ""));
         }
+    }
+
+    @Override
+    protected void persistentDB(long instanceId, List<String> idList) {
+        algorithmProcessor.persistentUuid(instanceId, idList);
     }
 }

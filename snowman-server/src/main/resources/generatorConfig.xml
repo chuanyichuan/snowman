@@ -39,6 +39,7 @@
         <javaClientGenerator type="XMLMAPPER" targetPackage="cc.kevinlu.snow.server.data.mapper"
                              targetProject="${datasource.dir}/src/main/java"/>
 
+        <!--
         <table tableName="sm_group" domainObjectName="GroupDO"
                mapperName="GroupMapper"
                enableCountByExample="true"
@@ -47,8 +48,25 @@
                selectByExampleQueryId="true" enableSelectByPrimaryKey="true">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--<table tableName="sm_service_instance" domainObjectName="ServiceInstanceDO"
+        <table tableName="sm_service_instance" domainObjectName="ServiceInstanceDO"
                mapperName="ServiceInstanceMapper"
+               enableCountByExample="true"
+               enableDeleteByExample="true" enableInsert="true" enableSelectByExample="true"
+               enableUpdateByExample="true"
+               selectByExampleQueryId="true" enableSelectByPrimaryKey="true">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        -->
+        <table tableName="sm_digit" domainObjectName="DigitDO"
+               mapperName="DigitMapper"
+               enableCountByExample="true"
+               enableDeleteByExample="true" enableInsert="true" enableSelectByExample="true"
+               enableUpdateByExample="true"
+               selectByExampleQueryId="true" enableSelectByPrimaryKey="true">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="sm_uuid" domainObjectName="UuidDO"
+               mapperName="UuidMapper"
                enableCountByExample="true"
                enableDeleteByExample="true" enableInsert="true" enableSelectByExample="true"
                enableUpdateByExample="true"
@@ -62,7 +80,7 @@
                enableUpdateByExample="true"
                selectByExampleQueryId="true" enableSelectByPrimaryKey="true">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>-->
+        </table>
 
     </context>
 </generatorConfiguration>

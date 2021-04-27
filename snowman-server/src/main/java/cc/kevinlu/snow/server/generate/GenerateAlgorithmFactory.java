@@ -7,7 +7,7 @@ import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.server.generate.alogrithm.DigitAlgorithm;
 import cc.kevinlu.snow.server.generate.alogrithm.SnowflakeAlgorithm;
 import cc.kevinlu.snow.server.generate.alogrithm.UuidAlgorithm;
-import cc.kevinlu.snow.server.processor.InstanceCacheProcessor;
+import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -18,17 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 public class GenerateAlgorithmFactory {
 
     @Autowired
-    private InstanceCacheProcessor instanceCacheProcessor;
+    private AlgorithmProcessor algorithmProcessor;
 
     public AbstractAlgorithm factory(Integer mode) {
         IdAlgorithmEnums algorithm = IdAlgorithmEnums.getEnumByAlgorithm(mode);
         switch (algorithm) {
             case SNOWFLAKE:
-                return new SnowflakeAlgorithm(instanceCacheProcessor);
+                return new SnowflakeAlgorithm(algorithmProcessor);
             case UUID:
-                return new UuidAlgorithm(instanceCacheProcessor);
+                return new UuidAlgorithm(algorithmProcessor);
             default:
-                return new DigitAlgorithm(instanceCacheProcessor);
+                return new DigitAlgorithm(algorithmProcessor);
         }
     }
 

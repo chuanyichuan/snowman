@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cc.kevinlu.snow.server.data.mapper.SnowflakeMapper">
-  <resultMap id="BaseResultMap" type="cc.kevinlu.snow.server.data.model.SnowflakeDO">
+<mapper namespace="cc.kevinlu.snow.server.data.mapper.DigitMapper">
+  <resultMap id="BaseResultMap" type="cc.kevinlu.snow.server.data.model.DigitDO">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="service_instance_id" jdbcType="BIGINT" property="serviceInstanceId" />
     <result column="chunk" jdbcType="INTEGER" property="chunk" />
-    <result column="g_value" jdbcType="BIGINT" property="gValue" />
+    <result column="from_value" jdbcType="BIGINT" property="fromValue" />
+    <result column="to_value" jdbcType="BIGINT" property="toValue" />
     <result column="gmt_created" jdbcType="TIMESTAMP" property="gmtCreated" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -67,16 +68,16 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, service_instance_id, chunk, g_value, gmt_created
+    id, service_instance_id, chunk, from_value, to_value, gmt_created
   </sql>
-  <select id="selectByExample" parameterType="cc.kevinlu.snow.server.data.model.SnowflakeDOExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="cc.kevinlu.snow.server.data.model.DigitDOExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     'true' as QUERYID,
     <include refid="Base_Column_List" />
-    from sm_snowflake
+    from sm_digit
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -87,33 +88,33 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from sm_snowflake
+    from sm_digit
     where id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from sm_snowflake
+    delete from sm_digit
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByExample" parameterType="cc.kevinlu.snow.server.data.model.SnowflakeDOExample">
-    delete from sm_snowflake
+  <delete id="deleteByExample" parameterType="cc.kevinlu.snow.server.data.model.DigitDOExample">
+    delete from sm_digit
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="cc.kevinlu.snow.server.data.model.SnowflakeDO">
+  <insert id="insert" parameterType="cc.kevinlu.snow.server.data.model.DigitDO">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into sm_snowflake (service_instance_id, chunk, g_value, 
-      gmt_created)
-    values (#{serviceInstanceId,jdbcType=BIGINT}, #{chunk,jdbcType=INTEGER}, #{gValue,jdbcType=BIGINT}, 
-      #{gmtCreated,jdbcType=TIMESTAMP})
+    insert into sm_digit (service_instance_id, chunk, from_value, 
+      to_value, gmt_created)
+    values (#{serviceInstanceId,jdbcType=BIGINT}, #{chunk,jdbcType=INTEGER}, #{fromValue,jdbcType=BIGINT}, 
+      #{toValue,jdbcType=BIGINT}, #{gmtCreated,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="cc.kevinlu.snow.server.data.model.SnowflakeDO">
+  <insert id="insertSelective" parameterType="cc.kevinlu.snow.server.data.model.DigitDO">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into sm_snowflake
+    insert into sm_digit
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="serviceInstanceId != null">
         service_instance_id,
@@ -121,8 +122,11 @@
       <if test="chunk != null">
         chunk,
       </if>
-      <if test="gValue != null">
-        g_value,
+      <if test="fromValue != null">
+        from_value,
+      </if>
+      <if test="toValue != null">
+        to_value,
       </if>
       <if test="gmtCreated != null">
         gmt_created,
@@ -135,22 +139,25 @@
       <if test="chunk != null">
         #{chunk,jdbcType=INTEGER},
       </if>
-      <if test="gValue != null">
-        #{gValue,jdbcType=BIGINT},
+      <if test="fromValue != null">
+        #{fromValue,jdbcType=BIGINT},
+      </if>
+      <if test="toValue != null">
+        #{toValue,jdbcType=BIGINT},
       </if>
       <if test="gmtCreated != null">
         #{gmtCreated,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="cc.kevinlu.snow.server.data.model.SnowflakeDOExample" resultType="java.lang.Long">
-    select count(*) from sm_snowflake
+  <select id="countByExample" parameterType="cc.kevinlu.snow.server.data.model.DigitDOExample" resultType="java.lang.Long">
+    select count(*) from sm_digit
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update sm_snowflake
+    update sm_digit
     <set>
       <if test="record.id != null">
         id = #{record.id,jdbcType=BIGINT},
@@ -161,8 +168,11 @@
       <if test="record.chunk != null">
         chunk = #{record.chunk,jdbcType=INTEGER},
       </if>
-      <if test="record.gValue != null">
-        g_value = #{record.gValue,jdbcType=BIGINT},
+      <if test="record.fromValue != null">
+        from_value = #{record.fromValue,jdbcType=BIGINT},
+      </if>
+      <if test="record.toValue != null">
+        to_value = #{record.toValue,jdbcType=BIGINT},
       </if>
       <if test="record.gmtCreated != null">
         gmt_created = #{record.gmtCreated,jdbcType=TIMESTAMP},
@@ -173,18 +183,19 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update sm_snowflake
+    update sm_digit
     set id = #{record.id,jdbcType=BIGINT},
       service_instance_id = #{record.serviceInstanceId,jdbcType=BIGINT},
       chunk = #{record.chunk,jdbcType=INTEGER},
-      g_value = #{record.gValue,jdbcType=BIGINT},
+      from_value = #{record.fromValue,jdbcType=BIGINT},
+      to_value = #{record.toValue,jdbcType=BIGINT},
       gmt_created = #{record.gmtCreated,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="cc.kevinlu.snow.server.data.model.SnowflakeDO">
-    update sm_snowflake
+  <update id="updateByPrimaryKeySelective" parameterType="cc.kevinlu.snow.server.data.model.DigitDO">
+    update sm_digit
     <set>
       <if test="serviceInstanceId != null">
         service_instance_id = #{serviceInstanceId,jdbcType=BIGINT},
@@ -192,8 +203,11 @@
       <if test="chunk != null">
         chunk = #{chunk,jdbcType=INTEGER},
       </if>
-      <if test="gValue != null">
-        g_value = #{gValue,jdbcType=BIGINT},
+      <if test="fromValue != null">
+        from_value = #{fromValue,jdbcType=BIGINT},
+      </if>
+      <if test="toValue != null">
+        to_value = #{toValue,jdbcType=BIGINT},
       </if>
       <if test="gmtCreated != null">
         gmt_created = #{gmtCreated,jdbcType=TIMESTAMP},
@@ -201,11 +215,12 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="cc.kevinlu.snow.server.data.model.SnowflakeDO">
-    update sm_snowflake
+  <update id="updateByPrimaryKey" parameterType="cc.kevinlu.snow.server.data.model.DigitDO">
+    update sm_digit
     set service_instance_id = #{serviceInstanceId,jdbcType=BIGINT},
       chunk = #{chunk,jdbcType=INTEGER},
-      g_value = #{gValue,jdbcType=BIGINT},
+      from_value = #{fromValue,jdbcType=BIGINT},
+      to_value = #{toValue,jdbcType=BIGINT},
       gmt_created = #{gmtCreated,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>

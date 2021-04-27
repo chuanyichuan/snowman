@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class SnowflakeDO implements Serializable {
+public class DigitDO implements Serializable {
     /**
      * id
      */
@@ -32,9 +32,14 @@ public class SnowflakeDO implements Serializable {
     private Integer chunk;
 
     /**
-     * ID值
+     * ID起始值(含括)
      */
-    private Long gValue;
+    private Long fromValue;
+
+    /**
+     * ID结束值(含括)
+     */
+    private Long toValue;
 
     /**
      * gmt_created
@@ -52,7 +57,8 @@ public class SnowflakeDO implements Serializable {
         sb.append(", id=").append(id);
         sb.append(", serviceInstanceId=").append(serviceInstanceId);
         sb.append(", chunk=").append(chunk);
-        sb.append(", gValue=").append(gValue);
+        sb.append(", fromValue=").append(fromValue);
+        sb.append(", toValue=").append(toValue);
         sb.append(", gmtCreated=").append(gmtCreated);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
