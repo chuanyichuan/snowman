@@ -55,6 +55,13 @@
       "defaultValue": 8080
     },
     {
+      "name": "snowman.prop.protocol",
+      "type": "java.lang.String",
+      "description": "请求协议",
+      "sourceType": "cc.kevinlu.snow.autoconfigure.SnowmanProperties",
+      "defaultValue": "http"
+    },
+    {
       "name": "snowman.prop.server-id",
       "type": "java.lang.String",
       "description": "客户端ID,必须项",
@@ -83,6 +90,23 @@
         {
           "value": "uuid",
           "description": "使用UUID算法生成ID"
+        }
+      ]
+    },
+    {
+      "name": "snowman.prop.protocol",
+      "values": [
+        {
+          "value": "http",
+          "description": "HTTP"
+        },
+        {
+          "value": "https",
+          "description": "HTTPS"
+        },
+        {
+          "value": "tcp",
+          "description": "TCP"
         }
       ]
     }
