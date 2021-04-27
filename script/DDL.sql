@@ -19,7 +19,7 @@ create table sm_group
     group_code   varchar(200) not null comment '服务组编号',
     chunk        int          not null comment '服务组每次获取ID数量',
     mode         int       default 1 null comment '1:数字;2:雪花算法;3:UUID',
-    `last_value` bigint       not null comment '服务组最近一次获取的ID最大值',
+    `last_value` varchar(66)  not null comment '服务组最近一次获取的ID最大值',
     gmt_created  timestamp null,
     gmt_updated  timestamp default CURRENT_TIMESTAMP null
 ) comment '客户端服务组';
