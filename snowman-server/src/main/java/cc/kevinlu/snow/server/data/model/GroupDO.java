@@ -44,7 +44,7 @@ public class GroupDO implements Serializable {
     /**
      * 服务组最近一次获取的ID最大值
      */
-    private Long lastValue;
+    private String lastValue;
 
     /**
      * gmt_created

@@ -7,7 +7,7 @@
     <result column="group_code" jdbcType="VARCHAR" property="groupCode" />
     <result column="chunk" jdbcType="INTEGER" property="chunk" />
     <result column="mode" jdbcType="INTEGER" property="mode" />
-    <result column="last_value" jdbcType="BIGINT" property="lastValue" />
+    <result column="last_value" jdbcType="VARCHAR" property="lastValue" />
     <result column="gmt_created" jdbcType="TIMESTAMP" property="gmtCreated" />
     <result column="gmt_updated" jdbcType="TIMESTAMP" property="gmtUpdated" />
   </resultMap>
@@ -111,7 +111,7 @@
       mode, last_value, gmt_created, 
       gmt_updated)
     values (#{name,jdbcType=VARCHAR}, #{groupCode,jdbcType=VARCHAR}, #{chunk,jdbcType=INTEGER}, 
-      #{mode,jdbcType=INTEGER}, #{lastValue,jdbcType=BIGINT}, #{gmtCreated,jdbcType=TIMESTAMP}, 
+      #{mode,jdbcType=INTEGER}, #{lastValue,jdbcType=VARCHAR}, #{gmtCreated,jdbcType=TIMESTAMP}, 
       #{gmtUpdated,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="cc.kevinlu.snow.server.data.model.GroupDO">
@@ -156,7 +156,7 @@
         #{mode,jdbcType=INTEGER},
       </if>
       <if test="lastValue != null">
-        #{lastValue,jdbcType=BIGINT},
+        #{lastValue,jdbcType=VARCHAR},
       </if>
       <if test="gmtCreated != null">
         #{gmtCreated,jdbcType=TIMESTAMP},
@@ -191,7 +191,7 @@
         mode = #{record.mode,jdbcType=INTEGER},
       </if>
       <if test="record.lastValue != null">
-        last_value = #{record.lastValue,jdbcType=BIGINT},
+        last_value = #{record.lastValue,jdbcType=VARCHAR},
       </if>
       <if test="record.gmtCreated != null">
         gmt_created = #{record.gmtCreated,jdbcType=TIMESTAMP},
@@ -211,7 +211,7 @@
       group_code = #{record.groupCode,jdbcType=VARCHAR},
       chunk = #{record.chunk,jdbcType=INTEGER},
       mode = #{record.mode,jdbcType=INTEGER},
-      last_value = #{record.lastValue,jdbcType=BIGINT},
+      last_value = #{record.lastValue,jdbcType=VARCHAR},
       gmt_created = #{record.gmtCreated,jdbcType=TIMESTAMP},
       gmt_updated = #{record.gmtUpdated,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
@@ -234,7 +234,7 @@
         mode = #{mode,jdbcType=INTEGER},
       </if>
       <if test="lastValue != null">
-        last_value = #{lastValue,jdbcType=BIGINT},
+        last_value = #{lastValue,jdbcType=VARCHAR},
       </if>
       <if test="gmtCreated != null">
         gmt_created = #{gmtCreated,jdbcType=TIMESTAMP},
@@ -251,7 +251,7 @@
       group_code = #{groupCode,jdbcType=VARCHAR},
       chunk = #{chunk,jdbcType=INTEGER},
       mode = #{mode,jdbcType=INTEGER},
-      last_value = #{lastValue,jdbcType=BIGINT},
+      last_value = #{lastValue,jdbcType=VARCHAR},
       gmt_created = #{gmtCreated,jdbcType=TIMESTAMP},
       gmt_updated = #{gmtUpdated,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}

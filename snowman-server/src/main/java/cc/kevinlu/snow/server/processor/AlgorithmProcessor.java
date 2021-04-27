@@ -6,14 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import cc.kevinlu.snow.server.data.mapper.DigitMapper;
-import cc.kevinlu.snow.server.data.mapper.ServiceInstanceMapper;
-import cc.kevinlu.snow.server.data.mapper.SnowflakeMapper;
-import cc.kevinlu.snow.server.data.mapper.UuidMapper;
-import cc.kevinlu.snow.server.data.model.DigitDO;
-import cc.kevinlu.snow.server.data.model.ServiceInstanceDO;
-import cc.kevinlu.snow.server.data.model.SnowflakeDO;
-import cc.kevinlu.snow.server.data.model.UuidDO;
+import cc.kevinlu.snow.server.data.mapper.*;
+import cc.kevinlu.snow.server.data.model.*;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -33,6 +27,8 @@ public class AlgorithmProcessor {
     private DigitMapper            digitMapper;
     @Autowired
     private UuidMapper             uuidMapper;
+    @Autowired
+    private GroupMapper            groupMapper;
 
     /**
      * get instance id
@@ -111,5 +107,18 @@ public class AlgorithmProcessor {
         instance.setSnowTimes(instance.getSnowTimes() + 1);
         instance.setGmtUpdated(new Date());
         serviceInstanceMapper.updateByPrimaryKeySelective(instance);
+    }
+
+    /**
+     * record the last value
+     * 
+     * @param groupId
+     * @param value
+     */
+    public void recordGroupLastValue(Long groupId, String value) {
+        GroupDO group = new GroupDO();
+        group.setId(groupId);
+        group.setLastValue(value);
+        groupMapper.updateByPrimaryKeySelective(group);
     }
 }

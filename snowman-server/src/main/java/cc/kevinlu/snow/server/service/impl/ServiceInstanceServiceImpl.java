@@ -55,7 +55,7 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
                 groupDO.setGroupCode(groupCode);
                 groupDO.setChunk(instance.getChunk());
                 groupDO.setMode(instance.getMode().getAlgorithm());
-                groupDO.setLastValue(0L);
+                groupDO.setLastValue("0");
                 groupDO.setGmtCreated(date);
                 groupDO.setGmtUpdated(date);
                 groupMapper.insertSelective(groupDO);
