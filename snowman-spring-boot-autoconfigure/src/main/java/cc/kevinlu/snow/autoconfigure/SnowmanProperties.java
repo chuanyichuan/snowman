@@ -21,34 +21,39 @@ public class SnowmanProperties {
     private String name;
 
     /**
+     * 请求协议
+     */
+    private String protocol = "http";
+
+    /**
      * snowman服务地址,默认localhost
      */
-    private String host    = "localhost";
+    private String host     = "localhost";
 
     /**
      * snowman服务端口,默认8080
      */
-    private int    port    = 8080;
+    private int    port     = 8080;
 
     /**
      * snowman请求路由
      */
-    private String path    = "/";
+    private String path     = "/";
 
     /**
      * 每次获取ID数量,默认10
      */
-    private int    chunk   = 10;
+    private int    chunk    = 10;
 
     /**
      * ID生成算法,包括数字、雪花算法、UUID
      */
-    private String mode    = "normal";
+    private String mode     = "normal";
 
     /**
      * 请求超时时间,单位毫秒,默认30秒
      */
-    private long   timeout = 30000;
+    private long   timeout  = 30000;
 
     /**
      * 客户端组ID,必须项
