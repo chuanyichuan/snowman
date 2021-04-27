@@ -24,7 +24,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  *  @date 2019/03/21
  */
 @Configuration
-@MapperScan(basePackages = { "com.cmss.open.api.data.mapper" }, sqlSessionFactoryRef = "sqlSessionFactory")
+@MapperScan(basePackages = { "cc.kevinlu.snow.server.data.mapper" }, sqlSessionFactoryRef = "sqlSessionFactory")
 public class DataSourceConfig {
 
     @Resource

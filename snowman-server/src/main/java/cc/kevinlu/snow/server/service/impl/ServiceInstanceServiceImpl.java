@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.nacos.common.utils.CollectionUtils;
 
@@ -18,7 +19,7 @@ import cc.kevinlu.snow.server.data.mapper.GroupMapper;
 import cc.kevinlu.snow.server.data.mapper.ServiceInstanceMapper;
 import cc.kevinlu.snow.server.data.mapper.SnowflakeMapper;
 import cc.kevinlu.snow.server.data.model.*;
-import cc.kevinlu.snow.server.processor.CacheProcessor;
+import cc.kevinlu.snow.server.processor.InstanceCacheProcessor;
 import cc.kevinlu.snow.server.service.ServiceInstanceService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,37 +31,40 @@ import lombok.extern.slf4j.Slf4j;
 public class ServiceInstanceServiceImpl implements ServiceInstanceService {
 
     @Autowired
-    private GroupMapper           groupMapper;
+    private GroupMapper            groupMapper;
     @Autowired
-    private SnowflakeMapper       snowflakeMapper;
+    private SnowflakeMapper        snowflakeMapper;
     @Autowired
-    private ServiceInstanceMapper serviceInstanceMapper;
+    private ServiceInstanceMapper  serviceInstanceMapper;
     @Autowired
-    private CacheProcessor        cacheProcessor;
+    private InstanceCacheProcessor instanceCacheProcessor;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean registerService(ServiceInstance instance) {
         String groupCode = instance.getGroupCode();
         String instanceCode = instance.getInstanceCode();
-        Long groupId, serviceInstanceId;
+        Long groupId = null, serviceInstanceId = null;
         boolean gflag = false, iflag = false;
         Date date = new Date();
         try {
-            if ((groupId = cacheProcessor.getGroupId(groupCode)) == null) {
+            if ((groupId = instanceCacheProcessor.getGroupId(groupCode)) == null) {
                 // insert group into database
                 GroupDO groupDO = new GroupDO();
+                groupDO.setName(instance.getName());
                 groupDO.setGroupCode(groupCode);
                 groupDO.setChunk(instance.getChunk());
+                groupDO.setMode(instance.getMode().getAlgorithm());
                 groupDO.setLastValue(0L);
                 groupDO.setGmtCreated(date);
                 groupDO.setGmtUpdated(date);
                 groupMapper.insertSelective(groupDO);
                 // set cache
                 groupId = groupDO.getId();
-                cacheProcessor.putGroupCode(groupCode, groupId);
+                instanceCacheProcessor.putGroupCode(groupCode, groupId);
                 gflag = true;
             }
-            if ((serviceInstanceId = cacheProcessor.getInstanceId(groupCode, instanceCode)) == null) {
+            if ((serviceInstanceId = instanceCacheProcessor.getInstanceId(groupId, instanceCode)) == null) {
                 // insert instance into database
                 ServiceInstanceDO instanceDO = new ServiceInstanceDO();
                 instanceDO.setGroupId(groupId);
@@ -72,15 +76,15 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
                 serviceInstanceMapper.insertSelective(instanceDO);
                 // set cache
                 serviceInstanceId = instanceDO.getId();
-                cacheProcessor.putInstanceCode(groupCode, instanceCode, serviceInstanceId);
+                instanceCacheProcessor.putInstanceCode(groupId, instanceCode, serviceInstanceId);
                 iflag = true;
             }
         } catch (Exception e) {
             if (gflag) {
-                cacheProcessor.removeGroup(groupCode);
+                instanceCacheProcessor.removeGroup(groupCode);
             }
             if (iflag) {
-                cacheProcessor.removeInstance(groupCode, instanceCode);
+                instanceCacheProcessor.removeInstance(groupId, instanceCode);
             }
             return false;
         }
@@ -120,13 +124,14 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
                 snowflakeExample.createCriteria().andServiceInstanceIdEqualTo(item.getId());
                 snowflakeExample.setOrderByClause("id desc limit 1");
                 List<SnowflakeDO> snowflakeList = snowflakeMapper.selectByExample(snowflakeExample);
+                ServiceInfo.InstanceInfo instanceInfo = ServiceInfo.InstanceInfo.builder()
+                        .serverCode(item.getServerCode()).snowTimes(item.getSnowTimes()).build();
                 if (CollectionUtils.isNotEmpty(snowflakeList)) {
                     SnowflakeDO snowflake = snowflakeList.get(0);
-
-                    instanceInfoList.add(ServiceInfo.InstanceInfo.builder().serverCode(item.getServerCode())
-                            .snowTimes(item.getSnowTimes()).lastFromValue(snowflake.getFromValue())
-                            .lastToValue(snowflake.getToValue()).build());
+                    instanceInfo.setLastFromValue(snowflake.getFromValue());
+                    instanceInfo.setLastToValue(snowflake.getToValue());
                 }
+                instanceInfoList.add(instanceInfo);
             });
         }
         return result;

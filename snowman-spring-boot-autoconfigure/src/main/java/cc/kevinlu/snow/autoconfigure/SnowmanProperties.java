@@ -41,6 +41,11 @@ public class SnowmanProperties {
     private int    chunk   = 10;
 
     /**
+     * ID生成算法,包括数字、雪花算法、UUID
+     */
+    private String mode    = "normal";
+
+    /**
      * 请求超时时间,单位毫秒,默认30秒
      */
     private long   timeout = 30000;
