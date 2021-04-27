@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class CacheProcessor implements InitializingBean {
+public class InstanceCacheProcessor implements InitializingBean {
 
     /**
      * groupCode cache set
@@ -36,7 +36,7 @@ public class CacheProcessor implements InitializingBean {
      */
     private volatile Map<String, Long> instanceCodeMap  = new ConcurrentHashMap<>();
 
-    private static final String        INSTANCE_PATTERN = "%_%";
+    private static final String        INSTANCE_PATTERN = "%s_%s";
 
     @Autowired
     private GroupMapper                groupMapper;
@@ -58,8 +58,8 @@ public class CacheProcessor implements InitializingBean {
      * 
      * @param instanceCode
      */
-    public void putInstanceCode(String groupCode, String instanceCode, Long id) {
-        instanceCodeMap.put(String.format(INSTANCE_PATTERN, groupCode, instanceCode), id);
+    public void putInstanceCode(Long groupId, String instanceCode, Long id) {
+        instanceCodeMap.put(String.format(INSTANCE_PATTERN, groupId, instanceCode), id);
     }
 
     /**
@@ -75,12 +75,12 @@ public class CacheProcessor implements InitializingBean {
     /**
      * Verify that the instance exists
      * 
-     * @param groupCode
+     * @param groupId
      * @param instanceCode
      * @return true: exists, false: not exists
      */
-    public boolean hasInstance(String groupCode, String instanceCode) {
-        return instanceCodeMap.containsKey(String.format(INSTANCE_PATTERN, groupCode, instanceCode));
+    public boolean hasInstance(Long groupId, String instanceCode) {
+        return instanceCodeMap.containsKey(String.format(INSTANCE_PATTERN, groupId, instanceCode));
     }
 
     /**
@@ -95,11 +95,11 @@ public class CacheProcessor implements InitializingBean {
     /**
      * remove key from instance cache
      * 
-     * @param groupCode
+     * @param groupId
      * @param instanceCode
      */
-    public void removeInstance(String groupCode, String instanceCode) {
-        instanceCodeMap.remove(String.format(INSTANCE_PATTERN, groupCode, instanceCode));
+    public void removeInstance(Long groupId, String instanceCode) {
+        instanceCodeMap.remove(String.format(INSTANCE_PATTERN, groupId, instanceCode));
     }
 
     /**
@@ -115,12 +115,12 @@ public class CacheProcessor implements InitializingBean {
     /**
      * get id of service instance
      * 
-     * @param groupCode
+     * @param groupId
      * @param instanceCode
      * @return
      */
-    public Long getInstanceId(String groupCode, String instanceCode) {
-        return instanceCodeMap.get(String.format(INSTANCE_PATTERN, groupCode, instanceCode));
+    public Long getInstanceId(Long groupId, String instanceCode) {
+        return instanceCodeMap.get(String.format(INSTANCE_PATTERN, groupId, instanceCode));
     }
 
     @Override

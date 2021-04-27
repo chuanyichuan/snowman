@@ -37,6 +37,11 @@ public class GroupDO implements Serializable {
     private Integer chunk;
 
     /**
+     * 1:数字;2:雪花算法;3:UUID
+     */
+    private Integer mode;
+
+    /**
      * 服务组最近一次获取的ID最大值
      */
     private Long lastValue;
@@ -63,6 +68,7 @@ public class GroupDO implements Serializable {
         sb.append(", name=").append(name);
         sb.append(", groupCode=").append(groupCode);
         sb.append(", chunk=").append(chunk);
+        sb.append(", mode=").append(mode);
         sb.append(", lastValue=").append(lastValue);
         sb.append(", gmtCreated=").append(gmtCreated);
         sb.append(", gmtUpdated=").append(gmtUpdated);
