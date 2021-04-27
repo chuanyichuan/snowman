@@ -18,12 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 public class GenerateAlgorithmFactory {
 
     @Autowired
-    private AlgorithmProcessor algorithmProcessor;
+    private AlgorithmProcessor          algorithmProcessor;
 
-    private DigitAlgorithm     digitAlgorithm;
-    private SnowflakeAlgorithm snowflakeAlgorithm;
-    private UuidAlgorithm      uuidAlgorithm;
-    private Object[]           lockObjs = new Object[] { new Object(), new Object(), new Object() };
+    private volatile DigitAlgorithm     digitAlgorithm;
+    private volatile SnowflakeAlgorithm snowflakeAlgorithm;
+    private volatile UuidAlgorithm      uuidAlgorithm;
+    private Object[]                    lockObjs = new Object[] { new Object(), new Object(), new Object() };
 
     public AbstractAlgorithm factory(Integer mode) {
         IdAlgorithmEnums algorithm = IdAlgorithmEnums.getEnumByAlgorithm(mode);
