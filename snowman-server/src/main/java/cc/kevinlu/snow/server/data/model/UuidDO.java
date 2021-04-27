@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class SnowflakeDO implements Serializable {
+public class UuidDO implements Serializable {
     /**
      * id
      */
@@ -34,7 +34,7 @@ public class SnowflakeDO implements Serializable {
     /**
      * ID值
      */
-    private Long gValue;
+    private String gValue;
 
     /**
      * gmt_created

@@ -3,7 +3,7 @@ package cc.kevinlu.snow.server.generate.alogrithm;
 import java.util.List;
 
 import cc.kevinlu.snow.server.generate.AbstractAlgorithm;
-import cc.kevinlu.snow.server.processor.InstanceCacheProcessor;
+import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -12,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DigitAlgorithm extends AbstractAlgorithm<Long> {
 
-    public DigitAlgorithm(InstanceCacheProcessor instanceCacheProcessor) {
-        super(instanceCacheProcessor);
+    public DigitAlgorithm(AlgorithmProcessor algorithmProcessor) {
+        super(algorithmProcessor);
     }
 
     @Override
@@ -21,6 +21,11 @@ public class DigitAlgorithm extends AbstractAlgorithm<Long> {
         for (long i = fromValue; i < fromValue + chunk; i++) {
             idList.add(i);
         }
+    }
+
+    @Override
+    protected void persistentDB(long instanceId, List<Long> idList) {
+        algorithmProcessor.persistentDigit(instanceId, idList);
     }
 
 }

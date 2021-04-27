@@ -15,9 +15,9 @@ import cc.kevinlu.snow.client.enums.ServiceStatusEnums;
 import cc.kevinlu.snow.client.instance.pojo.ServiceInfo;
 import cc.kevinlu.snow.client.instance.pojo.ServiceInstance;
 import cc.kevinlu.snow.client.instance.pojo.ServiceQuery;
+import cc.kevinlu.snow.server.data.mapper.DigitMapper;
 import cc.kevinlu.snow.server.data.mapper.GroupMapper;
 import cc.kevinlu.snow.server.data.mapper.ServiceInstanceMapper;
-import cc.kevinlu.snow.server.data.mapper.SnowflakeMapper;
 import cc.kevinlu.snow.server.data.model.*;
 import cc.kevinlu.snow.server.processor.InstanceCacheProcessor;
 import cc.kevinlu.snow.server.service.ServiceInstanceService;
@@ -33,7 +33,7 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
     @Autowired
     private GroupMapper            groupMapper;
     @Autowired
-    private SnowflakeMapper        snowflakeMapper;
+    private DigitMapper            digitMapper;
     @Autowired
     private ServiceInstanceMapper  serviceInstanceMapper;
     @Autowired
@@ -63,6 +63,11 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
                 groupId = groupDO.getId();
                 instanceCacheProcessor.putGroupCode(groupCode, groupId);
                 gflag = true;
+            } else {
+                GroupDO groupDO = groupMapper.selectByPrimaryKey(groupId);
+                groupDO.setChunk(instance.getChunk());
+                groupDO.setGmtUpdated(date);
+                groupMapper.updateByPrimaryKeySelective(groupDO);
             }
             if ((serviceInstanceId = instanceCacheProcessor.getInstanceId(groupId, instanceCode)) == null) {
                 // insert instance into database
@@ -92,6 +97,7 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ServiceInfo services(ServiceQuery params) {
         GroupDOExample groupExample = new GroupDOExample();
         GroupDOExample.Criteria criteria = groupExample.createCriteria();
@@ -117,17 +123,17 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
         result.setInstances(instanceInfoList);
 
         if (CollectionUtils.isNotEmpty(instanceList)) {
-            SnowflakeDOExample snowflakeExample = new SnowflakeDOExample();
+            DigitDOExample snowflakeExample = new DigitDOExample();
             instanceList.stream().forEach(item -> {
                 // query last snowflake
                 snowflakeExample.clear();
                 snowflakeExample.createCriteria().andServiceInstanceIdEqualTo(item.getId());
                 snowflakeExample.setOrderByClause("id desc limit 1");
-                List<SnowflakeDO> snowflakeList = snowflakeMapper.selectByExample(snowflakeExample);
+                List<DigitDO> snowflakeList = digitMapper.selectByExample(snowflakeExample);
                 ServiceInfo.InstanceInfo instanceInfo = ServiceInfo.InstanceInfo.builder()
                         .serverCode(item.getServerCode()).snowTimes(item.getSnowTimes()).build();
                 if (CollectionUtils.isNotEmpty(snowflakeList)) {
-                    SnowflakeDO snowflake = snowflakeList.get(0);
+                    DigitDO snowflake = snowflakeList.get(0);
                     instanceInfo.setLastFromValue(snowflake.getFromValue());
                     instanceInfo.setLastToValue(snowflake.getToValue());
                 }

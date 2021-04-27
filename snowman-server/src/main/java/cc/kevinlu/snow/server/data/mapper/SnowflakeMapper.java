@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 /**
 * @author chuan
-* @time 2021-04-26
+* @time 2021-04-27
 */
 public interface SnowflakeMapper {
     long countByExample(SnowflakeDOExample example);

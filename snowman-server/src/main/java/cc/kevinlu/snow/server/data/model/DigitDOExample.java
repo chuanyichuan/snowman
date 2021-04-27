@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SnowflakeDOExample {
+public class DigitDOExample {
     protected String orderByClause;
 
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;
 
-    public SnowflakeDOExample() {
+    public DigitDOExample() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
@@ -285,63 +285,123 @@ public class SnowflakeDOExample {
             return (Criteria) this;
         }
 
-        public Criteria andGValueIsNull() {
-            addCriterion("g_value is null");
+        public Criteria andFromValueIsNull() {
+            addCriterion("from_value is null");
             return (Criteria) this;
         }
 
-        public Criteria andGValueIsNotNull() {
-            addCriterion("g_value is not null");
+        public Criteria andFromValueIsNotNull() {
+            addCriterion("from_value is not null");
             return (Criteria) this;
         }
 
-        public Criteria andGValueEqualTo(Long value) {
-            addCriterion("g_value =", value, "gValue");
+        public Criteria andFromValueEqualTo(Long value) {
+            addCriterion("from_value =", value, "fromValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueNotEqualTo(Long value) {
-            addCriterion("g_value <>", value, "gValue");
+        public Criteria andFromValueNotEqualTo(Long value) {
+            addCriterion("from_value <>", value, "fromValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueGreaterThan(Long value) {
-            addCriterion("g_value >", value, "gValue");
+        public Criteria andFromValueGreaterThan(Long value) {
+            addCriterion("from_value >", value, "fromValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueGreaterThanOrEqualTo(Long value) {
-            addCriterion("g_value >=", value, "gValue");
+        public Criteria andFromValueGreaterThanOrEqualTo(Long value) {
+            addCriterion("from_value >=", value, "fromValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueLessThan(Long value) {
-            addCriterion("g_value <", value, "gValue");
+        public Criteria andFromValueLessThan(Long value) {
+            addCriterion("from_value <", value, "fromValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueLessThanOrEqualTo(Long value) {
-            addCriterion("g_value <=", value, "gValue");
+        public Criteria andFromValueLessThanOrEqualTo(Long value) {
+            addCriterion("from_value <=", value, "fromValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueIn(List<Long> values) {
-            addCriterion("g_value in", values, "gValue");
+        public Criteria andFromValueIn(List<Long> values) {
+            addCriterion("from_value in", values, "fromValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueNotIn(List<Long> values) {
-            addCriterion("g_value not in", values, "gValue");
+        public Criteria andFromValueNotIn(List<Long> values) {
+            addCriterion("from_value not in", values, "fromValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueBetween(Long value1, Long value2) {
-            addCriterion("g_value between", value1, value2, "gValue");
+        public Criteria andFromValueBetween(Long value1, Long value2) {
+            addCriterion("from_value between", value1, value2, "fromValue");
             return (Criteria) this;
         }
 
-        public Criteria andGValueNotBetween(Long value1, Long value2) {
-            addCriterion("g_value not between", value1, value2, "gValue");
+        public Criteria andFromValueNotBetween(Long value1, Long value2) {
+            addCriterion("from_value not between", value1, value2, "fromValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andToValueIsNull() {
+            addCriterion("to_value is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andToValueIsNotNull() {
+            addCriterion("to_value is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andToValueEqualTo(Long value) {
+            addCriterion("to_value =", value, "toValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andToValueNotEqualTo(Long value) {
+            addCriterion("to_value <>", value, "toValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andToValueGreaterThan(Long value) {
+            addCriterion("to_value >", value, "toValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andToValueGreaterThanOrEqualTo(Long value) {
+            addCriterion("to_value >=", value, "toValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andToValueLessThan(Long value) {
+            addCriterion("to_value <", value, "toValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andToValueLessThanOrEqualTo(Long value) {
+            addCriterion("to_value <=", value, "toValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andToValueIn(List<Long> values) {
+            addCriterion("to_value in", values, "toValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andToValueNotIn(List<Long> values) {
+            addCriterion("to_value not in", values, "toValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andToValueBetween(Long value1, Long value2) {
+            addCriterion("to_value between", value1, value2, "toValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andToValueNotBetween(Long value1, Long value2) {
+            addCriterion("to_value not between", value1, value2, "toValue");
             return (Criteria) this;
         }
 
