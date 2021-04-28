@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import cc.kevinlu.snow.autoconfigure.constants.UrlConstants;
 import cc.kevinlu.snow.autoconfigure.utils.HttpClientUtils;
 import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
+import cc.kevinlu.snow.client.instance.pojo.ServiceInfo;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -22,14 +24,28 @@ public class SnowmanClient {
 
     private SnowmanProperties properties;
 
-    private String            base_url;
+    private String            urlInstances;
+    private String            urlRegister;
+    private String            urlGenerate;
 
     public SnowmanClient(SnowmanProperties properties) {
         this.properties = properties;
-        base_url = properties.getProtocol() + "://" + properties.getHost() + ":" + properties.getPort()
+
+        // set url for standby
+        initRequestUrl();
+
+        // register the client to snowman server
+        registerToServer();
+    }
+
+    private void initRequestUrl() {
+        String baseUrl = properties.getProtocol() + "://" + properties.getHost() + ":" + properties.getPort()
                 + properties.getPath();
 
-        registerToServer();
+        urlInstances = baseUrl + UrlConstants.INSTANCE_API;
+        urlRegister = baseUrl + UrlConstants.REGISTER_API;
+        urlGenerate = baseUrl
+                + String.format(UrlConstants.SNOWFLAKE_API, properties.getGroupId(), properties.getServerId());
     }
 
     /**
@@ -39,13 +55,28 @@ public class SnowmanClient {
      */
     public List<Object> generateSnowId() {
         HttpClientUtils client = HttpClientUtils.getInstance(Charset.defaultCharset());
-        String url = String.format(UrlConstants.SNOWFLAKE_API, this.properties.getGroupId(),
-                this.properties.getServerId());
 
         try {
-            String result = client.doGet(base_url + url);
+            String result = client.doGet(urlGenerate);
             log.info("snowman client get id records success ");
             return JSONArray.parseArray(result, Object.class);
+        } catch (Exception e) {
+            throw new RuntimeException("snowman client register error!");
+        }
+    }
+
+    /**
+     * show all instances in the group
+     *
+     * @return
+     */
+    public ServiceInfo showGroupInstances() {
+        HttpClientUtils client = HttpClientUtils.getInstance(Charset.defaultCharset());
+
+        try {
+            String result = client.doGet(urlInstances);
+            log.info("snowman client get all instances success ");
+            return JSONObject.parseObject(result, ServiceInfo.class);
         } catch (Exception e) {
             throw new RuntimeException("snowman client register error!");
         }
@@ -57,7 +88,7 @@ public class SnowmanClient {
     public void registerToServer() {
         HttpClientUtils client = HttpClientUtils.getInstance(Charset.defaultCharset());
 
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>(8);
         params.put("name", this.properties.getName());
         params.put("groupCode", this.properties.getGroupId());
         params.put("instanceCode", this.properties.getServerId());
@@ -67,7 +98,7 @@ public class SnowmanClient {
         params.put("mode", algorithm);
 
         try {
-            String result = client.doPostJson(base_url + UrlConstants.REGISTER_API, params);
+            String result = client.doPostJson(urlRegister, params);
             log.info("snowman client register: " + result);
         } catch (Exception e) {
             throw new RuntimeException("snowman client register error!");

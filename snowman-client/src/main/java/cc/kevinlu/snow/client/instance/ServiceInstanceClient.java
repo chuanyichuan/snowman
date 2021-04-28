@@ -26,9 +26,7 @@ public interface ServiceInstanceClient {
      * @return
      */
     @PostMapping(value = "/register_service_instance", produces = MediaType.APPLICATION_JSON_VALUE)
-    default boolean registerService(@RequestBody ServiceInstance instance) {
-        return false;
-    }
+    boolean registerService(@RequestBody ServiceInstance instance);
 
     /**
      * query all instance of service by name or group
@@ -37,8 +35,6 @@ public interface ServiceInstanceClient {
      * @return
      */
     @PostMapping(value = "/query_service_instances", consumes = MediaType.APPLICATION_JSON_VALUE)
-    default ServiceInfo services(@RequestBody ServiceQuery params) {
-        return null;
-    }
+    ServiceInfo services(@RequestBody ServiceQuery params);
 
 }

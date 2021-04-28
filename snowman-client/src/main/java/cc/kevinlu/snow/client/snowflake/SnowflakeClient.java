@@ -1,6 +1,5 @@
 package cc.kevinlu.snow.client.snowflake;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
@@ -36,9 +35,7 @@ public interface SnowflakeClient {
      * @return
      */
     @GetMapping(value = "/generate/{code}/{instance}", produces = MediaType.APPLICATION_JSON_VALUE)
-    default List<Object> generate(@PathVariable(name = "code") String groupCode,
-                                  @PathVariable(name = "instance") String instanceCode) {
-        return new ArrayList<>();
-    }
+    List<Object> generate(@PathVariable(name = "code") String groupCode,
+                          @PathVariable(name = "instance") String instanceCode);
 
 }
