@@ -8,6 +8,7 @@ import cc.kevinlu.snow.client.exceptions.ParamIllegalException;
 import cc.kevinlu.snow.client.exceptions.ValueTooBigException;
 import cc.kevinlu.snow.server.data.model.GroupDO;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p>abs class for generate.</p>
@@ -19,6 +20,7 @@ import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
  * @author chuan
  * @see
  */
+@Slf4j
 public abstract class AbstractAlgorithm<T> {
 
     protected AlgorithmProcessor algorithmProcessor;
