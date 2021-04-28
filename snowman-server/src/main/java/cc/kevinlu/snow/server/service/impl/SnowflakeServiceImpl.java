@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import cc.kevinlu.snow.server.config.Constants;
 import cc.kevinlu.snow.server.data.mapper.GroupMapper;
@@ -62,7 +64,12 @@ public class SnowflakeServiceImpl implements SnowflakeService {
         } catch (Exception e) {
             log.error("generate error!", e);
         } finally {
-            snowflakeLockProcessor.releaseLock(groupCode);
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void afterCommit() {
+                    snowflakeLockProcessor.releaseLock(groupCode);
+                }
+            });
         }
         return null;
     }

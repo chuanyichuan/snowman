@@ -5,6 +5,7 @@ import cc.kevinlu.snow.client.exceptions.ParamIllegalException;
 import cc.kevinlu.snow.client.exceptions.ValueTooBigException;
 import cc.kevinlu.snow.server.data.model.GroupDO;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
  * @author chuan
  * @see
  */
+@Slf4j
 public abstract class AbstractAlgorithm<T> {
 
     protected AlgorithmProcessor algorithmProcessor;
