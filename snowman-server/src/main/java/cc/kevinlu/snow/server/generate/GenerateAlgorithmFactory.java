@@ -1,14 +1,13 @@
 package cc.kevinlu.snow.server.generate;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.server.generate.alogrithm.DigitAlgorithm;
 import cc.kevinlu.snow.server.generate.alogrithm.SnowflakeAlgorithm;
 import cc.kevinlu.snow.server.generate.alogrithm.UuidAlgorithm;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * @author chuan
@@ -18,12 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 public class GenerateAlgorithmFactory {
 
     @Autowired
-    private AlgorithmProcessor          algorithmProcessor;
+    private AlgorithmProcessor algorithmProcessor;
 
-    private volatile DigitAlgorithm     digitAlgorithm;
+    private volatile DigitAlgorithm digitAlgorithm;
     private volatile SnowflakeAlgorithm snowflakeAlgorithm;
-    private volatile UuidAlgorithm      uuidAlgorithm;
-    private Object[]                    lockObjs = new Object[] { new Object(), new Object(), new Object() };
+    private volatile UuidAlgorithm uuidAlgorithm;
+    private Object[] lockObjs = new Object[]{new Object(), new Object(), new Object()};
 
     public AbstractAlgorithm factory(Integer mode) {
         IdAlgorithmEnums algorithm = IdAlgorithmEnums.getEnumByAlgorithm(mode);
@@ -32,7 +31,7 @@ public class GenerateAlgorithmFactory {
                 if (snowflakeAlgorithm == null) {
                     synchronized (lockObjs[0]) {
                         if (snowflakeAlgorithm == null) {
-                            snowflakeAlgorithm = new SnowflakeAlgorithm(algorithmProcessor);
+                            snowflakeAlgorithm = new SnowflakeAlgorithm(algorithmProcessor, algorithmProcessor.getSnowflakeMapper());
                         }
                     }
                 }
@@ -41,7 +40,7 @@ public class GenerateAlgorithmFactory {
                 if (uuidAlgorithm == null) {
                     synchronized (lockObjs[1]) {
                         if (uuidAlgorithm == null) {
-                            uuidAlgorithm = new UuidAlgorithm(algorithmProcessor);
+                            uuidAlgorithm = new UuidAlgorithm(algorithmProcessor, algorithmProcessor.getUuidMapper());
                         }
                     }
                 }
@@ -50,12 +49,12 @@ public class GenerateAlgorithmFactory {
                 if (digitAlgorithm == null) {
                     synchronized (lockObjs[2]) {
                         if (digitAlgorithm == null) {
-                            digitAlgorithm = new DigitAlgorithm(algorithmProcessor);
+                            digitAlgorithm = new DigitAlgorithm(algorithmProcessor, algorithmProcessor.getDigitMapper());
                         }
                     }
                 }
                 return digitAlgorithm;
         }
-    }
 
+    }
 }

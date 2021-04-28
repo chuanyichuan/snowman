@@ -23,6 +23,19 @@ public class AlgorithmProcessor {
     private ServiceInstanceMapper  serviceInstanceMapper;
     @Autowired
     private SnowflakeMapper        snowflakeMapper;
+
+    public SnowflakeMapper getSnowflakeMapper() {
+        return snowflakeMapper;
+    }
+
+    public DigitMapper getDigitMapper() {
+        return digitMapper;
+    }
+
+    public UuidMapper getUuidMapper() {
+        return uuidMapper;
+    }
+
     @Autowired
     private DigitMapper            digitMapper;
     @Autowired
