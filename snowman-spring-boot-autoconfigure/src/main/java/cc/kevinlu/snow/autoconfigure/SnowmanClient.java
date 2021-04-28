@@ -28,6 +28,8 @@ public class SnowmanClient {
         this.properties = properties;
         base_url = properties.getProtocol() + "://" + properties.getHost() + ":" + properties.getPort()
                 + properties.getPath();
+
+        registerToServer();
     }
 
     /**
