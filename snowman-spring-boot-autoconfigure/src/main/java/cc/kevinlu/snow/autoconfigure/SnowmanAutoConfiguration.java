@@ -19,7 +19,6 @@ public class SnowmanAutoConfiguration {
     @ConditionalOnMissingBean(value = SnowmanClient.class)
     public SnowmanClient snowmanClient() {
         SnowmanClient client = new SnowmanClient(properties);
-        client.registerToServer();
         return client;
     }
 
