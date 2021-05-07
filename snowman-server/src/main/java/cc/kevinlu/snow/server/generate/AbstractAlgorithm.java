@@ -1,13 +1,14 @@
 package cc.kevinlu.snow.server.generate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.client.exceptions.ParamIllegalException;
 import cc.kevinlu.snow.client.exceptions.ValueTooBigException;
 import cc.kevinlu.snow.server.data.model.GroupDO;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 /**
  * <p>abs class for generate.</p>
@@ -71,7 +72,8 @@ public abstract class AbstractAlgorithm<T> {
         long fromValue = fromValue(group);
         long instanceId = instanceId(group.getId(), instanceCode);
         int chunk = group.getChunk();
-        List<T> idList = generateDistributedId(group.getId(), instanceId, fromValue, chunk);
+        List<T> idList = new ArrayList<>(chunk);
+        generateDistributedId(idList, group.getId(), instanceId, fromValue, chunk);
         persistentDB(instanceId, idList);
         recordSnowTimes(instanceId);
         recordLastValue(group.getId(), idList.get(idList.size() - 1));
@@ -81,19 +83,26 @@ public abstract class AbstractAlgorithm<T> {
     /**
      * Implementation
      *
+     * @param idList
      * @param groupId
      * @param instanceId
      * @param fromValue
      * @param chunk
      */
-    protected abstract List<T> generateDistributedId(long groupId, long instanceId, long fromValue,
-                                                     int chunk);
+    protected abstract void generateDistributedId(List<T> idList, long groupId, long instanceId, long fromValue,
+                                                  int chunk);
 
+    /**
+     * persistent data
+     *
+     * @param instanceId
+     * @param idList
+     */
     protected abstract void persistentDB(long instanceId, List<T> idList);
 
     /**
      * record last value
-     *
+     * 
      * @param id
      * @param value
      */
