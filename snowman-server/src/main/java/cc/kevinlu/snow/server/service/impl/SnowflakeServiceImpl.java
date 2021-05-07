@@ -3,6 +3,7 @@ package cc.kevinlu.snow.server.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
@@ -42,11 +43,15 @@ public class SnowflakeServiceImpl implements SnowflakeService {
     @Transactional(rollbackFor = Exception.class)
     public List<Object> generate(String groupCode, String instanceCode) {
 
-        // add lock
+        // acquire lock
+        int lockTimes = 0;
         while (!snowflakeLockProcessor.tryLock(groupCode, Constants.DEFAULT_TIMEOUT)) {
             try {
                 Thread.sleep(100L);
             } catch (InterruptedException e) {
+            }
+            if (lockTimes++ > 3) {
+                throw new CannotAcquireLockException("acquire lock timeout!");
             }
         }
         try {
