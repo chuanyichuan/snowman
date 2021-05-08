@@ -1,4 +1,4 @@
-package cc.kevinlu.snow.server.utils;
+package cc.kevinlu.snow.server.generate.worker;
 
 /**
  * Twitter_Snowflake<br>

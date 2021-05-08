@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import cc.kevinlu.snow.server.generate.worker.SnowflakeIdWorker;
+
 /**
  * @author chuan
  */
@@ -30,6 +32,10 @@ public class CollectionUtils {
             list.add(i);
         }
         return list;
+    }
+
+    public static boolean isNotEmpty(Collection coll) {
+        return !isEmpty(coll);
     }
 
     public static boolean isEmpty(Collection coll) {

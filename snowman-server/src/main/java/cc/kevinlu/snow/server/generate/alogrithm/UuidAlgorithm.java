@@ -2,9 +2,8 @@ package cc.kevinlu.snow.server.generate.alogrithm;
 
 import java.util.List;
 
-import com.alibaba.nacos.common.utils.UuidUtils;
-
 import cc.kevinlu.snow.server.generate.AbstractAlgorithm;
+import cc.kevinlu.snow.server.generate.worker.RandomWorker;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +21,7 @@ public class UuidAlgorithm extends AbstractAlgorithm<String> {
     protected void generateDistributedId(List<String> idList, long groupId, long instanceId, long fromValue,
                                          int chunk) {
         for (int i = 0; i < chunk; i++) {
-            idList.add(UuidUtils.generateUuid().replaceAll("-", ""));
+            idList.add(RandomWorker.getRandomUUID());
         }
     }
 

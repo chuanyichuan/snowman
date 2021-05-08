@@ -3,8 +3,8 @@ package cc.kevinlu.snow.server.generate.alogrithm;
 import java.util.List;
 
 import cc.kevinlu.snow.server.generate.AbstractAlgorithm;
+import cc.kevinlu.snow.server.generate.worker.SnowflakeIdWorker;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
-import cc.kevinlu.snow.server.utils.SnowflakeIdWorker;
 import lombok.extern.slf4j.Slf4j;
 
 /**
