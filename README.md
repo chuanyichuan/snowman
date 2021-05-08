@@ -1,53 +1,69 @@
 # snowman
-snowflake
+snowflake（分布式ID生成器），基于Twitter的Snowflake理论
 
-![功能脑图](snowman.png)
+支持客户端分组按块（chunk）生成算法，当前支持的算法包括UUID、DIGIT递增顺序号、SNOWFLAKE（雪花算法）
 
-使用场景
+![功能脑图](docs/snowman.png)
 
-- 业务需要根据一定的规则生成序号，如：
-  - 连续性：序号连续自增地进行分配
-  - 相关性：多租户隔离、按年、月、日分区
-  - 格式化: 序号输出的格式灵活可控
-- 技术上需要满足
-  - 高性能
-  - 线程安全
-  - 适用性好
-  - 配置简单、容易集成
-  
-  
+    
 ## 项目说明
 
 - ***JDK 版本要求: `JDK8+`*** 
 
 - 支持的后端
   - MySQL
-  - Redis
-  - MongoDB
+
 
 
 ## 核心概念
-
+区块chunk- 一个区块对应一个客户端集群，集群内节点共享，代表每次生成的ID数量
 
 
 ## 使用方法
 
-
-引入依赖
-
-开启配置(JDBC)
-
-
+客户端引入依赖
+```xml
+<dependency>
+    <groupId>cc.kevinlu</groupId>
+    <artifactId>snowman-spring-boot-starter</artifactId>
+    <version>最新版本</version>
+</dependency>
+```
+开启配置(Nacos)
+```yaml
+snowman:
+  prop:
+    name: springcloud-nacos
+    chunk: 25
+    mode: uuid
+    group-id: springcloud-nacos
+    server-id: nacos-1
+```
+开启配置(spring-boot)
+```properties
+snowman.prop.name=springboot
+snowman.prop.group-id=springboot
+snowman.prop.server-id=1
+server.port=8081
+```
 使用
+ ```java
+import cc.kevinlu.snow.autoconfigure.SnowmanClient;
 
+@RestController
+public class TestController {
 
-## 性能测试
+    @Resource
+    private SnowmanClient snowmanClient;
 
+    @RequestMapping(value = "/index")
+    public List<Object> query() {
+        return snowmanClient.generateSnowId();
+    }
+}
+```
+> `maven`依赖等详细配置请查看[examples](https://github.com/chuanyichuan/snowman-example)目录下的演示项目
 
-## 效果演示
-
-
-## 开发计划
 
 
  ## 贡献指南
