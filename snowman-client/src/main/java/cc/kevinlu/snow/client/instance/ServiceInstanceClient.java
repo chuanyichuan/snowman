@@ -10,7 +10,7 @@ import cc.kevinlu.snow.client.instance.pojo.ServiceInstance;
 import cc.kevinlu.snow.client.instance.pojo.ServiceQuery;
 
 /**
- * service instance client<br/>
+ * <p>service instance client</p>
  * <p>It is a feign client, other service can visit Snowman by reference it.</p>
  * <p>we can call the method of it to register the instance of service, and also
  * can get all instance's info with it.</p>
@@ -23,7 +23,8 @@ public interface ServiceInstanceClient {
     /**
      * register service
      * 
-     * @return
+     * @param instance Instance information
+     * @return true or false
      */
     @PostMapping(value = "/register_service_instance", produces = MediaType.APPLICATION_JSON_VALUE)
     boolean registerService(@RequestBody ServiceInstance instance);
@@ -31,8 +32,8 @@ public interface ServiceInstanceClient {
     /**
      * query all instance of service by name or group
      * 
-     * @param params
-     * @return
+     * @param params parameter for query
+     * @return Service Information
      */
     @PostMapping(value = "/query_service_instances", consumes = MediaType.APPLICATION_JSON_VALUE)
     ServiceInfo services(@RequestBody ServiceQuery params);

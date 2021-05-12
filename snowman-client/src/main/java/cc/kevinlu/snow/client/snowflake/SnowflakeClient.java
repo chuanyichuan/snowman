@@ -8,20 +8,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 /**
- * The client that generates the snowflake ID<br/>
+ * <p>The client that generates the snowflake ID</p>
  * <p>It only has one function called generate, client can use it to get some records.</p>
  * <p>When the client calls it, they should provide the code of the group they belong to.</p>
- * <p>For Example:
- * <br>
+ * <p>For Example:</p>
  * <pre>
  *    {@code @Autowired}
  *     private SnowflakeClient client;
  *     
  *     public void method(String groupCode) {
- *         List<Long> idList = client.generate(groupCode);
+ *         List&lt;Long&gt; idList = client.generate(groupCode);
  *     }
  * </pre>
- * </p>
  * 
  * @author chuan
  */
@@ -31,8 +29,9 @@ public interface SnowflakeClient {
     /**
      * generate function
      * 
-     * @param groupCode
-     * @return
+     * @param groupCode code of group
+     * @param instanceCode code of instance
+     * @return The list is populated by ID
      */
     @GetMapping(value = "/generate/{code}/{instance}", produces = MediaType.APPLICATION_JSON_VALUE)
     List<Object> generate(@PathVariable(name = "code") String groupCode,
