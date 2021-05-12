@@ -51,7 +51,7 @@ public class SnowmanClient {
     /**
      * generate snowflake ID
      *
-     * @return
+     * @return generate snowflake ID
      */
     public List<Object> generateSnowId() {
         HttpClientUtils client = HttpClientUtils.getInstance(Charset.defaultCharset());
@@ -68,7 +68,7 @@ public class SnowmanClient {
     /**
      * show all instances in the group
      *
-     * @return
+     * @return all instances in the group
      */
     public ServiceInfo showGroupInstances() {
         HttpClientUtils client = HttpClientUtils.getInstance(Charset.defaultCharset());

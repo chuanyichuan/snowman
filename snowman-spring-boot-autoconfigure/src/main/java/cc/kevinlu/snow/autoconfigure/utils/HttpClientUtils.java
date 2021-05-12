@@ -1,12 +1,11 @@
 package cc.kevinlu.snow.autoconfigure.utils;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
@@ -20,10 +19,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
@@ -48,6 +43,12 @@ public class HttpClientUtils {
         return getInstance(Charset.defaultCharset());
     }
 
+    /**
+     * 
+     * @param charset
+     *          character charset
+     * @return HttpClientUtils instance
+     */
     public static HttpClientUtils getInstance(Charset charset) {
         if (instance == null) {
             instance = new HttpClientUtils();
@@ -56,21 +57,45 @@ public class HttpClientUtils {
         return instance;
     }
 
+    /**
+     * 
+     * @param charset
+     *          set character charset
+     */
     public void setCharset(Charset charset) {
         this.charset = charset;
     }
 
     /**
      * post请求
+     * @param url
+     *          url
+     * @return result
+     * @throws Exception exception
      */
     public String doPost(String url) throws Exception {
         return doPost(url, null, null);
     }
 
+    /**
+     * 
+     * @param url url
+     * @param params params
+     * @return result
+     * @throws Exception connect exception
+     */
     public String doPost(String url, Map<String, Object> params) throws Exception {
         return doPost(url, params, null);
     }
 
+    /**
+     * 
+     * @param url url
+     * @param params params
+     * @param header header
+     * @return result
+     * @throws Exception connect exception
+     */
     public String doPost(String url, Map<String, Object> params, Map<String, String> header) throws Exception {
         String body = null;
         try {
@@ -100,11 +125,24 @@ public class HttpClientUtils {
 
     /**
      * postJson请求
+     * 
+     * @param url url
+     * @param params params
+     * @return result
+     * @throws Exception connect exception
      */
     public String doPostJson(String url, Map<String, Object> params) throws Exception {
         return doPostJson(url, params, null);
     }
 
+    /**
+     *
+     * @param url url
+     * @param params params
+     * @param header header
+     * @return result
+     * @throws Exception connect exception
+     */
     public String doPostJson(String url, Map<String, Object> params, Map<String, String> header) throws Exception {
         String json = null;
         if (params != null && !params.isEmpty()) {
@@ -120,14 +158,37 @@ public class HttpClientUtils {
         return postJson(url, json, header);
     }
 
+    /**
+     * 
+     * @param url url
+     * @param json params json
+     * @return result
+     * @throws Exception connect exception
+     */
     public String doPostJson(String url, String json) throws Exception {
         return doPostJson(url, json, null);
     }
 
+    /**
+     *
+     * @param url url
+     * @param json params json
+     * @param header header
+     * @return result
+     * @throws Exception connect exception
+     */
     public String doPostJson(String url, String json, Map<String, String> header) throws Exception {
         return postJson(url, json, header);
     }
 
+    /**
+     *
+     * @param url url
+     * @param json params json
+     * @param header header
+     * @return result
+     * @throws Exception connect exception
+     */
     private String postJson(String url, String json, Map<String, String> header) throws Exception {
         String body = null;
         try {
@@ -159,15 +220,34 @@ public class HttpClientUtils {
 
     /**
      * get请求
+     * 
+     * @param url url
+     * @return result
+     * @throws Exception connect exception
      */
     public String doGet(String url) throws Exception {
         return doGet(url, null, null);
     }
 
+    /**
+     * 
+     * @param url url
+     * @param header header
+     * @return result
+     * @throws Exception connect exception
+     */
     public String doGet(String url, Map<String, String> header) throws Exception {
         return doGet(url, null, header);
     }
 
+    /**
+     *
+     * @param url url
+     * @param params params
+     * @param header header
+     * @return result
+     * @throws Exception connect exception
+     */
     public String doGet(String url, Map<String, Object> params, Map<String, String> header) throws Exception {
         String body = null;
         try {
@@ -203,98 +283,11 @@ public class HttpClientUtils {
     }
 
     /**
-     * 下载文件
+     * 
+     * @param requestBase HttpRequestBase
+     * @return result
+     * @throws Exception execute exception
      */
-    public void doDownload(String url, String path) throws Exception {
-        download(url, null, path);
-    }
-
-    public void doDownload(String url, Map<String, Object> params, String path) throws Exception {
-        download(url, params, path);
-    }
-
-    /**
-     * 上传文件
-     */
-    public String doUpload(String url, String name, String path) throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(name, new File(path));
-        return doUpload(url, params);
-    }
-
-    public String doUpload(String url, Map<String, Object> params) throws Exception {
-        String body = null;
-        // Post请求
-        HttpPost httpPost = new HttpPost(url.trim());
-        // 设置参数
-        MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-        entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-        entityBuilder.setCharset(charset);
-        if (params != null && !params.isEmpty()) {
-            Iterator<String> it = params.keySet().iterator();
-            while (it.hasNext()) {
-                String key = it.next();
-                Object value = params.get(key);
-                if (value instanceof File) {
-                    FileBody fileBody = new FileBody((File) value);
-                    entityBuilder.addPart(key, fileBody);
-                } else {
-                    entityBuilder.addPart(key,
-                            new StringBody(String.valueOf(value), ContentType.DEFAULT_TEXT.withCharset(charset)));
-                }
-            }
-        }
-        HttpEntity entity = entityBuilder.build();
-        httpPost.setEntity(entity);
-        // 发送请求,获取返回数据
-        body = execute(httpPost);
-        return body;
-    }
-
-    private void download(String url, Map<String, Object> params, String path) throws Exception {
-        // Get请求
-        HttpGet httpGet = new HttpGet(url.trim());
-        if (params != null && !params.isEmpty()) {
-            // 设置参数
-            String str = EntityUtils.toString(new UrlEncodedFormEntity(map2NameValuePairList(params)));
-            String uri = httpGet.getURI().toString();
-            if (uri.indexOf("?") >= 0) {
-                httpGet.setURI(new URI(httpGet.getURI().toString() + "&" + str));
-            } else {
-                httpGet.setURI(new URI(httpGet.getURI().toString() + "?" + str));
-            }
-        }
-        // 发送请求,下载文件
-        downloadFile(httpGet, path);
-    }
-
-    private void downloadFile(HttpRequestBase requestBase, String path) throws Exception {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        try {
-            CloseableHttpResponse response = httpclient.execute(requestBase);
-            try {
-                HttpEntity entity = response.getEntity();
-
-                if (entity != null) {
-                    byte[] b = EntityUtils.toByteArray(entity);
-                    OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(path)));
-                    out.write(b);
-                    out.flush();
-                    out.close();
-                }
-                EntityUtils.consume(entity);
-            } catch (Exception e) {
-                throw e;
-            } finally {
-                response.close();
-            }
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            httpclient.close();
-        }
-    }
-
     private String execute(HttpRequestBase requestBase) throws Exception {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         String body = null;
@@ -320,6 +313,11 @@ public class HttpClientUtils {
         return body;
     }
 
+    /**
+     * 
+     * @param params params
+     * @return result
+     */
     private List<NameValuePair> map2NameValuePairList(Map<String, Object> params) {
         if (params != null && !params.isEmpty()) {
             List<NameValuePair> list = new ArrayList<NameValuePair>();

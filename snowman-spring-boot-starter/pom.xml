@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ MIT License
+  ~
+  ~ Copyright (c) 2021 chuanyichuan
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -10,26 +33,56 @@
     </parent>
     <groupId>cc.kevinlu</groupId>
     <artifactId>snowman-spring-boot-starter</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1</version>
+
     <name>snowman-spring-boot-starter</name>
+    <description>spring boot starter for snowman</description>
+    <url>https://github.com/chuanyichuan/snowman</url>
+
+    <licenses>
+        <license>
+            <name>The MIT License (MIT)</name>
+            <url>https://github.com/chuanyichuan/snowman/blob/main/LICENSE</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>git@github.com:chuanyichuan/snowman.git</url>
+        <connection>scm:git@github.com:chuanyichuan/snowman.git</connection>
+        <developerConnection>scm:git@github.com:chuanyichuan/snowman.git</developerConnection>
+        <tag>snowman-spring-boot-starter-1.0.0</tag>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>chuanchuan</name>
+            <email>lucunyu21@gmail.com</email>
+        </developer>
+    </developers>
 
     <properties>
         <java.version>1.8</java.version>
         <java.encoding>UTF-8</java.encoding>
+        <snowman-spring-boot-autoconfigure-version>1.0.1</snowman-spring-boot-autoconfigure-version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>cc.kevinlu</groupId>
             <artifactId>snowman-spring-boot-autoconfigure</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${snowman-spring-boot-autoconfigure-version}</version>
         </dependency>
     </dependencies>
 
-
     <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <name>Releases</name>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
         <snapshotRepository>
             <id>ossrh</id>
+            <name>Snapshot</name>
             <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
@@ -80,7 +133,7 @@
                 <configuration>
                     <serverId>ossrh</serverId>
                     <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
             </plugin>
             <plugin>
