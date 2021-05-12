@@ -33,7 +33,7 @@
     </parent>
     <groupId>cc.kevinlu</groupId>
     <artifactId>snowman-spring-boot-starter</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <name>snowman-spring-boot-starter</name>
     <description>spring boot starter for snowman</description>
@@ -63,7 +63,7 @@
     <properties>
         <java.version>1.8</java.version>
         <java.encoding>UTF-8</java.encoding>
-        <snowman-spring-boot-autoconfigure-version>1.0.1</snowman-spring-boot-autoconfigure-version>
+        <snowman-spring-boot-autoconfigure-version>1.0.2-SNAPSHOT</snowman-spring-boot-autoconfigure-version>
     </properties>
 
     <dependencies>

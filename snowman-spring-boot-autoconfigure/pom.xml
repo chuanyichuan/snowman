@@ -33,7 +33,7 @@
     </parent>
     <groupId>cc.kevinlu</groupId>
     <artifactId>snowman-spring-boot-autoconfigure</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <name>snowman-spring-boot-autoconfigure</name>
     <description>spring boot support for snowman</description>
@@ -50,7 +50,7 @@
         <url>git@github.com:chuanyichuan/snowman.git</url>
         <connection>scm:git@github.com:chuanyichuan/snowman.git</connection>
         <developerConnection>scm:git@github.com:chuanyichuan/snowman.git</developerConnection>
-        <tag>snowman-spring-boot-autoconfigure-1.0.1</tag>
+        <tag>snowman-spring-boot-autoconfigure-1.0.2-SNAPSHOT</tag>
     </scm>
 
     <developers>
@@ -63,7 +63,7 @@
     <properties>
         <java.version>1.8</java.version>
         <java.encoding>UTF-8</java.encoding>
-        <snowman-client-version>1.0.1</snowman-client-version>
+        <snowman-client-version>1.0.2-SNAPSHOT</snowman-client-version>
     </properties>
 
     <dependencies>

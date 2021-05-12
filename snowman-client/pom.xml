@@ -27,7 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cc.kevinlu</groupId>
     <artifactId>snowman-client</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <name>snowman-client</name>
     <description>client support for snowman</description>
@@ -44,7 +44,7 @@
         <url>git@github.com:chuanyichuan/snowman.git</url>
         <connection>scm:git@github.com:chuanyichuan/snowman.git</connection>
         <developerConnection>scm:git@github.com:chuanyichuan/snowman.git</developerConnection>
-        <tag>snowman-client-1.0.1</tag>
+        <tag>snowman-client-1.0.2-SNAPSHOT</tag>
     </scm>
 
     <developers>
