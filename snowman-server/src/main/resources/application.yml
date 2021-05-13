@@ -7,6 +7,14 @@ server:
     accesslog:
       enabled: true
 
+spring:
+  task:
+    execution:
+      thread-name-prefix: snowman-task-
+      pool:
+        core-size: 10
+        max-size: 20
+
 logging:
   name: snowman
   config: classpath:logback-spring.xml

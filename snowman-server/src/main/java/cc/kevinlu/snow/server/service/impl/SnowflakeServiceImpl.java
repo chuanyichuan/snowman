@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.CannotAcquireLockException;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
@@ -11,11 +12,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import cc.kevinlu.snow.server.config.Constants;
 import cc.kevinlu.snow.server.data.mapper.GroupMapper;
-import cc.kevinlu.snow.server.data.mapper.ServiceInstanceMapper;
 import cc.kevinlu.snow.server.data.model.GroupDO;
 import cc.kevinlu.snow.server.data.model.GroupDOExample;
 import cc.kevinlu.snow.server.generate.GenerateAlgorithmFactory;
-import cc.kevinlu.snow.server.processor.InstanceCacheProcessor;
 import cc.kevinlu.snow.server.processor.SnowflakeLockProcessor;
 import cc.kevinlu.snow.server.service.SnowflakeService;
 import cc.kevinlu.snow.server.utils.CollectionUtils;
@@ -31,11 +30,9 @@ public class SnowflakeServiceImpl implements SnowflakeService {
     @Autowired
     private GroupMapper              groupMapper;
     @Autowired
-    private ServiceInstanceMapper    serviceInstanceMapper;
+    private ThreadPoolTaskExecutor   taskExecutor;
     @Autowired
     private SnowflakeLockProcessor   snowflakeLockProcessor;
-    @Autowired
-    private InstanceCacheProcessor   instanceCacheProcessor;
     @Autowired
     private GenerateAlgorithmFactory generateAlgorithmFactory;
 
@@ -73,6 +70,9 @@ public class SnowflakeServiceImpl implements SnowflakeService {
                 @Override
                 public void afterCommit() {
                     snowflakeLockProcessor.releaseLock(groupCode);
+                    // check next chunk
+                    taskExecutor.execute(() -> {
+                    });
                 }
             });
         }
