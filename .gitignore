@@ -6,6 +6,7 @@ target/
 mvnw*
 .DS_Store
 .mvn/**
+**.log
 
 ### STS ###
 .apt_generated
