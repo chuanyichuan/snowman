@@ -64,9 +64,23 @@ public class TestController {
 ```
 > `maven`依赖等详细配置请查看[examples](https://github.com/chuanyichuan/snowman-example)目录下的演示项目
 
-
-
- ## 贡献指南
+## 开发计划
+###v1.0.1  分支： main
+ - [X] 支持Digit ID 生成算法
+ - [X] 支持Snowflake ID生成算法
+ - [X] 支持UUID 生成算法
+ - [X] 构建snowman-spring-boot-starter实现自动配置
+ - [X] 使用本地锁保证并发数据一致性
+ - [X] 仅支持单机部署
+ 
+###v1.0.2 分支 cc_1.0.2
+ - [ ] 支持ID预生成，优化每次请求效率，提升性能
+ - [ ] 加入任务异步处理，降低服务队系统资源的影响
+ - [ ] 优化Snowflake时钟同步，使用数据库时钟做同步
+ - [X] Web容器由Tomcat更改为Undertow 提升吞吐量
+ - [X] 加入日志链路追踪MDC
+ 
+## 贡献指南
 
  代码要求：
   - 统一风格，包含注释、代码缩进等与本项目保持一致
