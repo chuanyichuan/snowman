@@ -11,27 +11,28 @@
     </resultMap>
 
     <insert id="insertDigit">
-        insert into sm_digit (service_instance_id, chunk, from_value, to_value, gmt_created) values
+        insert into sm_digit (service_instance_id, chunk, from_value, to_value, status, gmt_created) values
         <foreach collection="records" item="r" separator=",">
             (#{r.serviceInstanceId,jdbcType=BIGINT}, #{r.chunk,jdbcType=INTEGER},
             #{r.fromValue,jdbcType=BIGINT}, #{r.toValue,jdbcType=BIGINT},
-            #{r.gmtCreated,jdbcType=TIMESTAMP})
+            #{r.status,jdbcType=TINYINT}, #{r.gmtCreated,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
     <insert id="insertSnowflake">
-        insert into sm_snowflake (service_instance_id, chunk, g_value, gmt_created) values
+        insert into sm_snowflake (service_instance_id, chunk, g_value, status, gmt_created) values
         <foreach collection="records" item="r" separator=",">
             (#{r.serviceInstanceId,jdbcType=BIGINT}, #{r.chunk,jdbcType=INTEGER}, #{r.gValue,jdbcType=BIGINT},
-            #{r.gmtCreated,jdbcType=TIMESTAMP})
+            #{r.status,jdbcType=TINYINT}, #{r.gmtCreated,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
     <insert id="insertUuid">
-        insert into sm_uuid (service_instance_id, chunk, g_value, gmt_created) values
+        insert into sm_uuid (service_instance_id, chunk, g_value, status, gmt_created) values
         <foreach collection="records" item="r" separator=",">
             (#{r.serviceInstanceId,jdbcType=BIGINT}, #{r.chunk,jdbcType=INTEGER},
-            #{r.gValue,jdbcType=VARCHAR}, #{r.gmtCreated,jdbcType=TIMESTAMP})
+            #{r.gValue,jdbcType=VARCHAR}, #{r.status,jdbcType=TINYINT},
+            #{r.gmtCreated,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 

@@ -74,7 +74,7 @@ public class DigitPersistentProcessor implements PersistentProcessor<Long> {
     public List<Long> getRecords(RecordAcquireBO acquireBO) {
         String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, acquireBO.getGroupId(), acquireBO.getInstanceId(),
                 acquireBO.getMode());
-        List records = redisProcessor.lGet(key, 0, acquireBO.getChunk());
+        List records = redisProcessor.lGet(key, 0, 0);
         if (CollectionUtils.isEmpty(records)) {
             return null;
         }
@@ -89,6 +89,7 @@ public class DigitPersistentProcessor implements PersistentProcessor<Long> {
             }
         }
         asyncTaskProcessor.digitStatus(records);
+        redisProcessor.lTrim(key, 1, -1);
         return result;
     }
 
