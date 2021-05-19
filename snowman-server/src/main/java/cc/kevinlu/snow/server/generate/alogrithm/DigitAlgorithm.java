@@ -23,9 +23,4 @@ public class DigitAlgorithm extends AbstractAlgorithm<Long> {
         }
     }
 
-    @Override
-    protected void persistentDB(long instanceId, List<Long> idList) {
-        algorithmProcessor.persistentDigit(instanceId, idList);
-    }
-
 }

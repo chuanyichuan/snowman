@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 /**
 * @author chuan
-* @time 2021-04-27
+* @time 2021-05-19
 */
 public interface DigitMapper {
     long countByExample(DigitDOExample example);

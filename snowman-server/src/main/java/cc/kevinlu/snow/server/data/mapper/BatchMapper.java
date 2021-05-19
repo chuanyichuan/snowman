@@ -21,4 +21,10 @@ public interface BatchMapper {
     void insertUuid(@Param("records") List<UuidDO> records);
 
     void updateSnowTimes(Long instanceId);
+
+    List<Long> selectIdFromDigit(@Param("instanceId") Long instanceId, @Param("status") Integer status);
+
+    List<Long> selectIdFromUuid(@Param("instanceId") Long instanceId, @Param("status") Integer status);
+
+    List<Long> selectIdFromSnowflake(@Param("instanceId") Long instanceId, @Param("status") Integer status);
 }

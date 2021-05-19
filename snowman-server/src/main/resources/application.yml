@@ -7,14 +7,6 @@ server:
     accesslog:
       enabled: true
 
-spring:
-  task:
-    execution:
-      thread-name-prefix: snowman-task-
-      pool:
-        core-size: 10
-        max-size: 20
-
 logging:
   name: snowman
   config: classpath:logback-spring.xml
@@ -26,3 +18,7 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
     cc.kevinlu.snow.server.data.mapper: DEBUG
+
+spring:
+  redis:
+    redisson: classpath:redis/redisson-single-config.yml

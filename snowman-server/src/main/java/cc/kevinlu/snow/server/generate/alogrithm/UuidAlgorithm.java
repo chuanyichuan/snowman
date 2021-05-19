@@ -25,8 +25,4 @@ public class UuidAlgorithm extends AbstractAlgorithm<String> {
         }
     }
 
-    @Override
-    protected void persistentDB(long instanceId, List<String> idList) {
-        algorithmProcessor.persistentUuid(instanceId, idList);
-    }
 }

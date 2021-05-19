@@ -9,7 +9,7 @@ import lombok.ToString;
 
 /**
 * @author chuan
-* @time 2021-04-27
+* @time 2021-05-19
 */
 @Data
 @ToString
@@ -37,6 +37,11 @@ public class UuidDO implements Serializable {
     private String gValue;
 
     /**
+     * 状态(0:未使用;1:已使用)
+     */
+    private Integer status;
+
+    /**
      * gmt_created
      */
     private Date gmtCreated;
@@ -53,6 +58,7 @@ public class UuidDO implements Serializable {
         sb.append(", serviceInstanceId=").append(serviceInstanceId);
         sb.append(", chunk=").append(chunk);
         sb.append(", gValue=").append(gValue);
+        sb.append(", status=").append(status);
         sb.append(", gmtCreated=").append(gmtCreated);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");

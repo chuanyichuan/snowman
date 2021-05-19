@@ -7,6 +7,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import cc.kevinlu.snow.server.utils.helper.ThreadPoolHelper;
@@ -14,6 +15,7 @@ import cc.kevinlu.snow.server.utils.helper.ThreadPoolHelper;
 @SpringBootApplication(scanBasePackages = { "cc.kevinlu.snow.server" })
 @EnableDiscoveryClient
 @RefreshScope
+@EnableAsync
 public class SnowmanApplication {
 
     public static void main(String[] args) {

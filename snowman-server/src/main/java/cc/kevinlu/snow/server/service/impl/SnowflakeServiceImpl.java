@@ -15,7 +15,12 @@ import cc.kevinlu.snow.server.data.mapper.GroupMapper;
 import cc.kevinlu.snow.server.data.model.GroupDO;
 import cc.kevinlu.snow.server.data.model.GroupDOExample;
 import cc.kevinlu.snow.server.generate.GenerateAlgorithmFactory;
-import cc.kevinlu.snow.server.processor.SnowflakeLockProcessor;
+import cc.kevinlu.snow.server.listener.pojo.PreGenerateBO;
+import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
+import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
+import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
+import cc.kevinlu.snow.server.processor.task.CheckChunkProcessor;
+import cc.kevinlu.snow.server.processor.task.pojo.RegenerateBO;
 import cc.kevinlu.snow.server.service.SnowflakeService;
 import cc.kevinlu.snow.server.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +37,11 @@ public class SnowflakeServiceImpl implements SnowflakeService {
     @Autowired
     private ThreadPoolTaskExecutor   taskExecutor;
     @Autowired
-    private SnowflakeLockProcessor   snowflakeLockProcessor;
+    private RedisProcessor           redisProcessor;
+    @Autowired
+    private AlgorithmProcessor       algorithmProcessor;
+    @Autowired
+    private CheckChunkProcessor      checkChunkProcessor;
     @Autowired
     private GenerateAlgorithmFactory generateAlgorithmFactory;
 
@@ -42,7 +51,8 @@ public class SnowflakeServiceImpl implements SnowflakeService {
 
         // acquire lock
         int lockTimes = 0;
-        while (!snowflakeLockProcessor.tryLock(groupCode, Constants.DEFAULT_TIMEOUT)) {
+        String key = String.format(Constants.CACHE_GENERATE_LOCK_PATTERN, groupCode);
+        while (!redisProcessor.tryLockWithLua(key, instanceCode, Constants.DEFAULT_TIMEOUT)) {
             try {
                 Thread.sleep(100L);
             } catch (InterruptedException e) {
@@ -61,17 +71,30 @@ public class SnowflakeServiceImpl implements SnowflakeService {
             }
             GroupDO group = groupList.get(0);
 
-            // generate
-            return generateAlgorithmFactory.factory(group.getMode()).generate(group, instanceCode);
+            // get from redis
+            RecordAcquireBO acquireBO = RecordAcquireBO.builder().groupId(group.getId()).instanceCode(instanceCode)
+                    .mode(group.getMode()).chunk(group.getChunk()).build();
+            List<Object> recordList = algorithmProcessor.getRecords(acquireBO);
+            if (CollectionUtils.isEmpty(recordList)) {
+                // generate
+                RegenerateBO regenerate = RegenerateBO.builder().groupId(group.getId()).group(groupCode)
+                        .mode(group.getMode()).instance(instanceCode).chunk(group.getChunk())
+                        .lastValue(group.getLastValue()).build();
+                recordList = generateAlgorithmFactory.factory(group.getMode()).generate(regenerate);
+            }
+            return recordList;
         } catch (Exception e) {
             log.error("generate error!", e);
         } finally {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
                 @Override
                 public void afterCommit() {
-                    snowflakeLockProcessor.releaseLock(groupCode);
+                    redisProcessor.releaseLock(key, instanceCode);
                     // check next chunk
                     taskExecutor.execute(() -> {
+                        PreGenerateBO preGenerateBO = PreGenerateBO.builder().group(groupCode).instance(instanceCode)
+                                .times(0).build();
+                        checkChunkProcessor.sendChunkMessage(preGenerateBO);
                     });
                 }
             });

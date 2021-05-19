@@ -41,4 +41,26 @@
         where id = #{instanceId, jdbcType=BIGINT}
     </update>
 
+    <select id="selectIdFromDigit" resultType="java.lang.Long">
+        select id from sm_digit
+        where service_instance_id = #{instanceId, jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status, jdbcType=INTEGER}
+        </if>
+    </select>
+    <select id="selectIdFromUuid" resultType="java.lang.Long">
+        select id from sm_uuid
+        where service_instance_id = #{instanceId, jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status, jdbcType=INTEGER}
+        </if>
+    </select>
+    <select id="selectIdFromSnowflake" resultType="java.lang.Long">
+        select id from sm_snowflake
+        where service_instance_id = #{instanceId, jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status, jdbcType=INTEGER}
+        </if>
+    </select>
+
 </mapper>
