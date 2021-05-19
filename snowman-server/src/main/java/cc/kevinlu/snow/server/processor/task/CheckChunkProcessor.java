@@ -1,5 +1,6 @@
 package cc.kevinlu.snow.server.processor.task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.server.config.Constants;
 import cc.kevinlu.snow.server.generate.GenerateAlgorithmFactory;
 import cc.kevinlu.snow.server.listener.RedisQueueListener;
@@ -74,6 +76,9 @@ public class CheckChunkProcessor {
     public boolean preRegenerate(RegenerateBO regenerate) {
         // redis_key
         Long count = redisCount(regenerate);
+        if (IdAlgorithmEnums.DIGIT.getAlgorithm() == regenerate.getMode()) {
+            return count < DEFAULT_MULTIPLE_FACTOR * DEFAULT_LOAD_FACTOR;
+        }
         return count <= regenerate.getChunk() * DEFAULT_MULTIPLE_FACTOR * DEFAULT_LOAD_FACTOR;
     }
 
@@ -98,9 +103,14 @@ public class CheckChunkProcessor {
     public void startRegenerate(RegenerateBO regenerate) {
         long total = regenerate.getChunk() * DEFAULT_MULTIPLE_FACTOR;
         long survivor = redisCount(regenerate);
-        int size = (int) (total - survivor);
-        regenerate.setChunk(size);
-        List idList = generateAlgorithmFactory.factory(regenerate.getMode()).regenerate(regenerate);
+        int size = (int) (total - survivor) / regenerate.getChunk();
+        List idList = new ArrayList();
+        regenerate.setChunk(regenerate.getChunk());
+        idList.addAll(generateAlgorithmFactory.factory(regenerate.getMode()).regenerate(regenerate));
+        for (int i = 1; i < size; i++) {
+            regenerate.setLastValue(String.valueOf(idList.get(idList.size() - 1)));
+            idList.addAll(generateAlgorithmFactory.factory(regenerate.getMode()).regenerate(regenerate));
+        }
         if (CollectionUtils.isEmpty(idList)) {
             log.info("regenerate error!");
             PreGenerateBO preGenerateBO = new PreGenerateBO();

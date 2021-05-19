@@ -85,7 +85,7 @@ public class UuidPersistentProcessor implements PersistentProcessor<String> {
     public List<String> getRecords(RecordAcquireBO acquireBO) {
         String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, acquireBO.getGroupId(), acquireBO.getInstanceId(),
                 acquireBO.getMode());
-        List records = redisProcessor.lGet(key, 0, acquireBO.getChunk());
+        List records = redisProcessor.lGet(key, 0, acquireBO.getChunk() - 1);
         if (CollectionUtils.isEmpty(records)) {
             return null;
         }
@@ -94,6 +94,7 @@ public class UuidPersistentProcessor implements PersistentProcessor<String> {
         List<UuidDO> dataList = uuidMapper.selectByExample(example);
         List<String> result = dataList.stream().map(UuidDO::getGValue).collect(Collectors.toList());
         asyncTaskProcessor.uuidStatus(records);
+        redisProcessor.lTrim(key, acquireBO.getChunk() - 1, -1);
         return result;
     }
 

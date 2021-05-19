@@ -656,6 +656,22 @@ public class RedisProcessor {
     }
 
     /**
+     * 移除N个值
+     *
+     * @param key   键
+     * @param start 移除起始位置
+     * @param end 移除截止位置
+     * @return 移除的个数
+     */
+    public void lTrim(String key, long start, long end) {
+        try {
+            redisTemplate.opsForList().trim(key, start, end);
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
+    }
+
+    /**
      * 使用lua语句实现分布式锁
      * 
      * @param key

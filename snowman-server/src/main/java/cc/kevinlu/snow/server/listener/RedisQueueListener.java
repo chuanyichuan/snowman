@@ -99,6 +99,7 @@ public class RedisQueueListener {
             }
 
         } catch (Exception e) {
+            log.warn("regenerate error! msg = [{}]", e.getMessage(), e);
         } finally {
             redisProcessor.releaseLock(lock, instanceCode);
             log.warn("[{}] - [{}] 释放锁成功", groupCode, instanceCode);

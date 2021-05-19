@@ -79,7 +79,7 @@ public class SnowflakeServiceImpl implements SnowflakeService {
                 // generate
                 RegenerateBO regenerate = RegenerateBO.builder().groupId(group.getId()).group(groupCode)
                         .mode(group.getMode()).instance(instanceCode).chunk(group.getChunk())
-                        .lastValue(group.getLastValue()).build();
+                        .lastValue(group.getLastValue()).times(0).build();
                 recordList = generateAlgorithmFactory.factory(group.getMode()).generate(regenerate);
             }
             return recordList;
@@ -93,7 +93,7 @@ public class SnowflakeServiceImpl implements SnowflakeService {
                     // check next chunk
                     taskExecutor.execute(() -> {
                         PreGenerateBO preGenerateBO = PreGenerateBO.builder().group(groupCode).instance(instanceCode)
-                                .times(0).build();
+                                .times(1).build();
                         checkChunkProcessor.sendChunkMessage(preGenerateBO);
                     });
                 }

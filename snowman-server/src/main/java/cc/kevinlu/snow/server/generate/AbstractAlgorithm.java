@@ -2,7 +2,6 @@ package cc.kevinlu.snow.server.generate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.client.exceptions.ParamIllegalException;
@@ -80,7 +79,7 @@ public abstract class AbstractAlgorithm<T> {
         PersistentBO<T> persistentBO = new PersistentBO<>();
         persistentBO.setInstanceId(instanceId);
         persistentBO.setIdList(idList);
-        persistentBO.setUsed(Objects.equals(regenerate.getTimes(), 0));
+        persistentBO.setUsed(regenerate.getTimes() == 0);
         persistentBO.setMode(regenerate.getMode());
         persistentDB(persistentBO);
 
