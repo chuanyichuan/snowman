@@ -1,5 +1,6 @@
 package cc.kevinlu.snow.server.processor.algorithm;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -10,10 +11,13 @@ import cc.kevinlu.snow.server.config.Constants;
 import cc.kevinlu.snow.server.data.mapper.BatchMapper;
 import cc.kevinlu.snow.server.data.mapper.DigitMapper;
 import cc.kevinlu.snow.server.data.model.DigitDO;
+import cc.kevinlu.snow.server.data.model.DigitDOExample;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
 import cc.kevinlu.snow.server.pojo.enums.StatusEnums;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
+import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
+import cc.kevinlu.snow.server.processor.task.AsyncTaskProcessor;
 import cc.kevinlu.snow.server.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,11 +31,13 @@ import lombok.extern.slf4j.Slf4j;
 public class DigitPersistentProcessor implements PersistentProcessor<Long> {
 
     @Autowired
-    private DigitMapper    digitMapper;
+    private DigitMapper        digitMapper;
     @Autowired
-    private BatchMapper    batchMapper;
+    private BatchMapper        batchMapper;
     @Autowired
-    private RedisProcessor redisProcessor;
+    private RedisProcessor     redisProcessor;
+    @Autowired
+    private AsyncTaskProcessor asyncTaskProcessor;
 
     @Override
     public void asyncToCache(AsyncCacheBO asyncCacheBO) {
@@ -41,8 +47,8 @@ public class DigitPersistentProcessor implements PersistentProcessor<Long> {
             log.debug("async to cache empty!");
             return;
         }
-        String key = String.format(Constants.CACHE_ID_PATTERN, asyncCacheBO.getGroupId(), asyncCacheBO.getInstanceId(),
-                asyncCacheBO.getMode());
+        String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, asyncCacheBO.getGroupId(),
+                asyncCacheBO.getInstanceId(), asyncCacheBO.getMode());
         redisProcessor.del(key);
         redisProcessor.lSet(key, recordList);
     }
@@ -63,4 +69,27 @@ public class DigitPersistentProcessor implements PersistentProcessor<Long> {
         digit.setGmtCreated(new Date());
         digitMapper.insertSelective(digit);
     }
+
+    @Override
+    public List<Long> getRecords(RecordAcquireBO acquireBO) {
+        String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, acquireBO.getGroupId(), acquireBO.getInstanceId(),
+                acquireBO.getMode());
+        List records = redisProcessor.lGet(key, 0, acquireBO.getChunk());
+        if (CollectionUtils.isEmpty(records)) {
+            return null;
+        }
+        DigitDOExample example = new DigitDOExample();
+        example.createCriteria().andIdIn(records);
+        List<DigitDO> dataList = digitMapper.selectByExample(example);
+
+        List<Long> result = new ArrayList<>();
+        for (DigitDO digitDO : dataList) {
+            for (long i = digitDO.getFromValue(); i <= digitDO.getToValue(); i++) {
+                result.add(i);
+            }
+        }
+        asyncTaskProcessor.digitStatus(records);
+        return result;
+    }
+
 }

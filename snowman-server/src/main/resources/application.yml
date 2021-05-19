@@ -18,3 +18,7 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
     cc.kevinlu.snow.server.data.mapper: DEBUG
+
+spring:
+  redis:
+    redisson: classpath:redis/redisson-single-config.yml

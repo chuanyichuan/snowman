@@ -20,27 +20,27 @@ import lombok.extern.slf4j.Slf4j;
 public class RedisProcessor {
 
     @Resource
-    private RedisTemplate<String, Object>            redisTemplate;
+    private RedisTemplate<String, Object>         redisTemplate;
 
     /**
      * 默认过期时长，单位：秒
      */
-    public static final Long                         DEFAULT_EXPIRE    = 60 * 60 * 24L;
+    public static final Long                      DEFAULT_EXPIRE    = 60 * 60 * 24L;
 
     /**
      * 不设置过期时长
      */
-    public static final long                         NOT_EXPIRE        = -1;
+    public static final long                      NOT_EXPIRE        = -1;
 
-    public static final DefaultRedisScript<Integer>  LOCK_LUA_SCRIPTS  = new DefaultRedisScript<>(
-            "if " + "redis.call('setnx',KEYS[1],ARGV[1]) == 1 then"
-                    + "redis.call('expire',KEYS[1],ARGV[2]) return 1 else return 0 end",
-            Integer.class);
+    public static final DefaultRedisScript<Long>  LOCK_LUA_SCRIPTS  = new DefaultRedisScript<>(
+            "if redis.call('setNx',KEYS[1],ARGV[1]) then if redis.call('get',KEYS[1])==ARGV[1] then return redis.call"
+                    + "('pexpire',KEYS[1],ARGV[2]) else return 0 end end",
+            Long.class);
 
     //定义释放锁的lua脚本
-    private final static DefaultRedisScript<Integer> UNLOCK_LUA_SCRIPT = new DefaultRedisScript<>(
-            "if redis.call(\"get\",KEYS[1]) == KEYS[2] then return redis.call(\"del\",KEYS[1]) else return -1 end",
-            Integer.class);
+    private final static DefaultRedisScript<Long> UNLOCK_LUA_SCRIPT = new DefaultRedisScript<>(
+            "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end",
+            Long.class);
 
     public boolean exists(String key) {
         return redisTemplate.hasKey(key);
@@ -660,16 +660,20 @@ public class RedisProcessor {
      * 
      * @param key
      * @param value
-     * @param times 秒
+     * @param times 毫秒
      * @return
      */
     public boolean tryLockWithLua(String key, String value, int times) {
         try {
-            List<String> keys = Arrays.asList(key, value, String.valueOf(times));
+            List<String> values = new ArrayList<>(2);
+            values.add(value);
+            values.add(String.valueOf(times));
 
-            Integer result = redisTemplate.execute(LOCK_LUA_SCRIPTS, keys);
+            Long result = redisTemplate.execute(LOCK_LUA_SCRIPTS, Collections.singletonList(key), value, times);
+
             //判断是否成功
-            return result.equals(1);
+            //            return redisTemplate.opsForValue().setIfAbsent(key, value, times, TimeUnit.MILLISECONDS);
+            return Objects.equals(result, 1L);
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
             return false;
@@ -703,10 +707,13 @@ public class RedisProcessor {
      */
     public boolean releaseLock(String key, String value) {
         try {
-            List<String> keys = Arrays.asList(key, value);
-            Integer result = redisTemplate.execute(LOCK_LUA_SCRIPTS, keys);
+            String v = (String) redisTemplate.opsForValue().get(key);
+            if (!value.equals(v)) {
+                return false;
+            }
+            Long result = redisTemplate.execute(UNLOCK_LUA_SCRIPT, Collections.singletonList(key), value);
             //判断是否成功
-            return result.equals(1);
+            return Objects.equals(result, 1L);
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
             return false;

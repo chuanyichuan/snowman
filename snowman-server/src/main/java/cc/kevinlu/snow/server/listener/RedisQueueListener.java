@@ -1,13 +1,11 @@
 package cc.kevinlu.snow.server.listener;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.Message;
-import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Component;
-
-import com.alibaba.fastjson.JSONObject;
 
 import cc.kevinlu.snow.server.config.Constants;
 import cc.kevinlu.snow.server.data.mapper.GroupMapper;
@@ -29,28 +27,24 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class RedisQueueListener implements MessageListener {
+public class RedisQueueListener {
 
     @Autowired
-    private RedisProcessor        redisProcessor;
+    private RedisProcessor              redisProcessor;
     @Autowired
-    private GroupMapper           groupMapper;
+    private GroupMapper                 groupMapper;
     @Autowired
-    private ServiceInstanceMapper serviceInstanceMapper;
+    private ServiceInstanceMapper       serviceInstanceMapper;
     @Autowired
-    private CheckChunkProcessor   checkChunkProcessor;
+    private CheckChunkProcessor         checkChunkProcessor;
+    @Autowired
+    private Jackson2JsonRedisSerializer jacksonSerializer;
 
-    @Override
-    public void onMessage(Message message, byte[] pattern) {
-        String topic = new String(message.getChannel());
-        String content = new String(message.getBody());
-        if (Constants.CHECK_CHUNK_TOPIC.equalsIgnoreCase(topic)) {
-            // check chunk size
-            PreGenerateBO preGenerateBO = JSONObject.parseObject(content, PreGenerateBO.class);
-            checkChunkSize(preGenerateBO);
-        } else {
-            log.warn("receive other message!");
-        }
+    public void onMessage(String content) {
+        log.info("receive check message from redis: , content = [{}]", content);
+        PreGenerateBO preGenerateBO = (PreGenerateBO) jacksonSerializer
+                .deserialize(content.getBytes(StandardCharsets.UTF_8));
+        checkChunkSize(preGenerateBO);
     }
 
     /**
@@ -107,6 +101,7 @@ public class RedisQueueListener implements MessageListener {
         } catch (Exception e) {
         } finally {
             redisProcessor.releaseLock(lock, instanceCode);
+            log.warn("[{}] - [{}] 释放锁成功", groupCode, instanceCode);
         }
     }
 }

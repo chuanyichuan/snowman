@@ -1,5 +1,7 @@
 package cc.kevinlu.snow.server.processor;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,7 @@ import cc.kevinlu.snow.server.processor.algorithm.PersistentProcessor;
 import cc.kevinlu.snow.server.processor.algorithm.SnowflakePersistentProcessor;
 import cc.kevinlu.snow.server.processor.algorithm.UuidPersistentProcessor;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
+import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -91,4 +94,9 @@ public class AlgorithmProcessor {
         }
     }
 
+    public List<Object> getRecords(RecordAcquireBO acquireBO) {
+        long instanceId = instanceCacheProcessor.getInstanceId(acquireBO.getGroupId(), acquireBO.getInstanceCode());
+        acquireBO.setInstanceId(instanceId);
+        return getProcessor(acquireBO.getMode()).getRecords(acquireBO);
+    }
 }

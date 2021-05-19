@@ -3,17 +3,22 @@ package cc.kevinlu.snow.server.processor.algorithm;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import cc.kevinlu.snow.server.config.Constants;
 import cc.kevinlu.snow.server.data.mapper.BatchMapper;
+import cc.kevinlu.snow.server.data.mapper.UuidMapper;
 import cc.kevinlu.snow.server.data.model.UuidDO;
+import cc.kevinlu.snow.server.data.model.UuidDOExample;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
 import cc.kevinlu.snow.server.pojo.enums.StatusEnums;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
+import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
+import cc.kevinlu.snow.server.processor.task.AsyncTaskProcessor;
 import cc.kevinlu.snow.server.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,9 +32,13 @@ import lombok.extern.slf4j.Slf4j;
 public class UuidPersistentProcessor implements PersistentProcessor<String> {
 
     @Autowired
-    private BatchMapper    batchMapper;
+    private BatchMapper        batchMapper;
     @Autowired
-    private RedisProcessor redisProcessor;
+    private RedisProcessor     redisProcessor;
+    @Autowired
+    private UuidMapper         uuidMapper;
+    @Autowired
+    private AsyncTaskProcessor asyncTaskProcessor;
 
     @Override
     public void asyncToCache(AsyncCacheBO asyncCacheBO) {
@@ -39,8 +48,8 @@ public class UuidPersistentProcessor implements PersistentProcessor<String> {
             log.debug("async to cache empty!");
             return;
         }
-        String key = String.format(Constants.CACHE_ID_PATTERN, asyncCacheBO.getGroupId(), asyncCacheBO.getInstanceId(),
-                asyncCacheBO.getMode());
+        String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, asyncCacheBO.getGroupId(),
+                asyncCacheBO.getInstanceId(), asyncCacheBO.getMode());
         redisProcessor.del(key);
         redisProcessor.lSet(key, recordList);
     }
@@ -70,6 +79,22 @@ public class UuidPersistentProcessor implements PersistentProcessor<String> {
         if (!CollectionUtils.isEmpty(records)) {
             batchMapper.insertUuid(records);
         }
+    }
+
+    @Override
+    public List<String> getRecords(RecordAcquireBO acquireBO) {
+        String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, acquireBO.getGroupId(), acquireBO.getInstanceId(),
+                acquireBO.getMode());
+        List records = redisProcessor.lGet(key, 0, acquireBO.getChunk());
+        if (CollectionUtils.isEmpty(records)) {
+            return null;
+        }
+        UuidDOExample example = new UuidDOExample();
+        example.createCriteria().andIdIn(records);
+        List<UuidDO> dataList = uuidMapper.selectByExample(example);
+        List<String> result = dataList.stream().map(UuidDO::getGValue).collect(Collectors.toList());
+        asyncTaskProcessor.uuidStatus(records);
+        return result;
     }
 
 }

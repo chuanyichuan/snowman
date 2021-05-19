@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
-import com.alibaba.fastjson.JSONObject;
 
 import cc.kevinlu.snow.server.config.Constants;
 import cc.kevinlu.snow.server.generate.GenerateAlgorithmFactory;
 import cc.kevinlu.snow.server.listener.RedisQueueListener;
 import cc.kevinlu.snow.server.listener.pojo.PreGenerateBO;
+import cc.kevinlu.snow.server.processor.InstanceCacheProcessor;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
 import cc.kevinlu.snow.server.processor.task.pojo.RegenerateBO;
 import cc.kevinlu.snow.server.utils.CollectionUtils;
@@ -30,25 +30,21 @@ public class CheckChunkProcessor {
     private RedisProcessor           redisProcessor;
     @Autowired
     private GenerateAlgorithmFactory generateAlgorithmFactory;
+    @Autowired
+    private InstanceCacheProcessor   instanceCacheProcessor;
 
     /**
      * the max times for regenerate message
      */
-    private static final int         REGENERATE_TIMES_LIMIT     = 3;
+    private static final int         REGENERATE_TIMES_LIMIT  = 3;
     /**
      * The default pre-generate threshold
      */
-    private static final int         DEFAULT_MULTIPLE_FACTOR    = 7;
+    private static final int         DEFAULT_MULTIPLE_FACTOR = 7;
     /**
      * The default scaling threshold, which can also be configured by the client
      */
-    private static final float       DEFAULT_LOAD_FACTOR        = 0.3f;
-
-    private static final String      ID_CACHE_COUNT_KEY         = "sm_id_count";
-    /**
-     * The template for counter，will be filled with groupCode & mode & instanceCode
-     */
-    private static final String      ID_CACHE_COUNT_KEY_PATTERN = "sm_count_%s_%s_%s";
+    private static final float       DEFAULT_LOAD_FACTOR     = 0.3f;
 
     /**
      * Send message to redis
@@ -56,6 +52,7 @@ public class CheckChunkProcessor {
      * @param preGenerateBO
      * @see RedisQueueListener
      */
+    @Async
     public void sendChunkMessage(PreGenerateBO preGenerateBO) {
         if (StringUtils.isAnyBlank(preGenerateBO.getGroup(), preGenerateBO.getInstance())) {
             log.warn("Reject Illegal Call!");
@@ -65,7 +62,7 @@ public class CheckChunkProcessor {
             log.warn("Times overflow!");
             return;
         }
-        redisProcessor.sendMessage(Constants.CHECK_CHUNK_TOPIC, JSONObject.toJSONString(preGenerateBO));
+        redisProcessor.sendMessage(Constants.CHECK_CHUNK_TOPIC, preGenerateBO);
     }
 
     /**
@@ -87,9 +84,10 @@ public class CheckChunkProcessor {
      * @return
      */
     private Long redisCount(RegenerateBO regenerate) {
-        String key = String.format(ID_CACHE_COUNT_KEY_PATTERN, regenerate.getGroup(), regenerate.getMode(),
-                regenerate.getInstance());
-        return (Long) redisProcessor.hget(ID_CACHE_COUNT_KEY, key);
+        long instanceId = instanceCacheProcessor.getInstanceId(regenerate.getGroupId(), regenerate.getInstance());
+        String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, regenerate.getGroupId(), instanceId,
+                regenerate.getMode());
+        return redisProcessor.lGetListSize(key);
     }
 
     /**
