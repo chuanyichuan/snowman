@@ -2,12 +2,14 @@ package cc.kevinlu.snow.server.generate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.client.exceptions.ParamIllegalException;
 import cc.kevinlu.snow.client.exceptions.ValueTooBigException;
-import cc.kevinlu.snow.server.data.model.GroupDO;
+import cc.kevinlu.snow.server.pojo.PersistentBO;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
+import cc.kevinlu.snow.server.processor.task.pojo.RegenerateBO;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -32,13 +34,13 @@ public abstract class AbstractAlgorithm<T> {
     /**
      * get from value
      *
-     * @param group
+     * @param regenerate
      * @return
      */
-    private Long fromValue(GroupDO group) {
-        if (IdAlgorithmEnums.DIGIT.getAlgorithm() == group.getMode()) {
-            long lastValue = Long.parseLong(group.getLastValue());
-            if (lastValue >= Long.MAX_VALUE - group.getChunk()) {
+    private Long fromValue(RegenerateBO regenerate) {
+        if (IdAlgorithmEnums.DIGIT.getAlgorithm() == regenerate.getMode()) {
+            long lastValue = Long.parseLong(regenerate.getLastValue());
+            if (lastValue >= Long.MAX_VALUE - regenerate.getChunk()) {
                 throw new ValueTooBigException("ID has been used up!");
             }
             return lastValue + 1L;
@@ -64,19 +66,24 @@ public abstract class AbstractAlgorithm<T> {
     /**
      * client can get records by call it
      *
-     * @param group
-     * @param instanceCode
+     * @param regenerate
      * @return
      */
-    public List<T> generate(GroupDO group, String instanceCode) {
-        long fromValue = fromValue(group);
-        long instanceId = instanceId(group.getId(), instanceCode);
-        int chunk = group.getChunk();
+    public List<T> generate(RegenerateBO regenerate) {
+        long fromValue = fromValue(regenerate);
+        long instanceId = instanceId(regenerate.getGroupId(), regenerate.getInstance());
+        int chunk = regenerate.getChunk();
         List<T> idList = new ArrayList<>(chunk);
-        generateDistributedId(idList, group.getId(), instanceId, fromValue, chunk);
-        persistentDB(instanceId, idList);
+        generateDistributedId(idList, regenerate.getGroupId(), instanceId, fromValue, chunk);
+
+        PersistentBO<T> persistentBO = new PersistentBO<>();
+        persistentBO.setInstanceId(instanceId);
+        persistentBO.setIdList(idList);
+        persistentBO.setUsed(Objects.equals(regenerate.getTimes(), 0));
+        persistentDB(persistentBO);
+
         recordSnowTimes(instanceId);
-        recordLastValue(group.getId(), idList.get(idList.size() - 1));
+        recordLastValue(regenerate.getGroupId(), idList.get(idList.size() - 1));
         return idList;
     }
 
@@ -95,10 +102,9 @@ public abstract class AbstractAlgorithm<T> {
     /**
      * persistent data
      *
-     * @param instanceId
-     * @param idList
+     * @param persistent
      */
-    protected abstract void persistentDB(long instanceId, List<T> idList);
+    protected abstract void persistentDB(PersistentBO<T> persistent);
 
     /**
      * record last value

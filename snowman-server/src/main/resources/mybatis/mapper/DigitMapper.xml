@@ -7,6 +7,7 @@
     <result column="chunk" jdbcType="INTEGER" property="chunk" />
     <result column="from_value" jdbcType="BIGINT" property="fromValue" />
     <result column="to_value" jdbcType="BIGINT" property="toValue" />
+    <result column="status" jdbcType="TINYINT" property="status" />
     <result column="gmt_created" jdbcType="TIMESTAMP" property="gmtCreated" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -68,7 +69,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, service_instance_id, chunk, from_value, to_value, gmt_created
+    id, service_instance_id, chunk, from_value, to_value, status, gmt_created
   </sql>
   <select id="selectByExample" parameterType="cc.kevinlu.snow.server.data.model.DigitDOExample" resultMap="BaseResultMap">
     select
@@ -106,9 +107,11 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into sm_digit (service_instance_id, chunk, from_value, 
-      to_value, gmt_created)
+      to_value, status, gmt_created
+      )
     values (#{serviceInstanceId,jdbcType=BIGINT}, #{chunk,jdbcType=INTEGER}, #{fromValue,jdbcType=BIGINT}, 
-      #{toValue,jdbcType=BIGINT}, #{gmtCreated,jdbcType=TIMESTAMP})
+      #{toValue,jdbcType=BIGINT}, #{status,jdbcType=TINYINT}, #{gmtCreated,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="cc.kevinlu.snow.server.data.model.DigitDO">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
@@ -128,6 +131,9 @@
       <if test="toValue != null">
         to_value,
       </if>
+      <if test="status != null">
+        status,
+      </if>
       <if test="gmtCreated != null">
         gmt_created,
       </if>
@@ -144,6 +150,9 @@
       </if>
       <if test="toValue != null">
         #{toValue,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
       </if>
       <if test="gmtCreated != null">
         #{gmtCreated,jdbcType=TIMESTAMP},
@@ -174,6 +183,9 @@
       <if test="record.toValue != null">
         to_value = #{record.toValue,jdbcType=BIGINT},
       </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
       <if test="record.gmtCreated != null">
         gmt_created = #{record.gmtCreated,jdbcType=TIMESTAMP},
       </if>
@@ -189,6 +201,7 @@
       chunk = #{record.chunk,jdbcType=INTEGER},
       from_value = #{record.fromValue,jdbcType=BIGINT},
       to_value = #{record.toValue,jdbcType=BIGINT},
+      status = #{record.status,jdbcType=TINYINT},
       gmt_created = #{record.gmtCreated,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -209,6 +222,9 @@
       <if test="toValue != null">
         to_value = #{toValue,jdbcType=BIGINT},
       </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
       <if test="gmtCreated != null">
         gmt_created = #{gmtCreated,jdbcType=TIMESTAMP},
       </if>
@@ -221,6 +237,7 @@
       chunk = #{chunk,jdbcType=INTEGER},
       from_value = #{fromValue,jdbcType=BIGINT},
       to_value = #{toValue,jdbcType=BIGINT},
+      status = #{status,jdbcType=TINYINT},
       gmt_created = #{gmtCreated,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>

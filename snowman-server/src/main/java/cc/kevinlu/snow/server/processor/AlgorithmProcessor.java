@@ -13,6 +13,7 @@ import cc.kevinlu.snow.server.data.model.DigitDO;
 import cc.kevinlu.snow.server.data.model.GroupDO;
 import cc.kevinlu.snow.server.data.model.SnowflakeDO;
 import cc.kevinlu.snow.server.data.model.UuidDO;
+import cc.kevinlu.snow.server.pojo.PersistentBO;
 import cc.kevinlu.snow.server.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,13 +44,13 @@ public class AlgorithmProcessor {
     }
 
     @Autowired
-    private DigitMapper            digitMapper;
+    private DigitMapper digitMapper;
     @Autowired
-    private UuidMapper             uuidMapper;
+    private UuidMapper  uuidMapper;
     @Autowired
-    private GroupMapper            groupMapper;
+    private GroupMapper groupMapper;
     @Autowired
-    private BatchMapper            batchMapper;
+    private BatchMapper batchMapper;
 
     /**
      * get instance id
@@ -64,10 +65,12 @@ public class AlgorithmProcessor {
     /**
      * persistence digit records
      * 
-     * @param instanceId
-     * @param idList
+     * @param persistent
      */
-    public void persistentDigit(long instanceId, List<Long> idList) {
+    public void persistentDigit(PersistentBO<Long> persistent) {
+        long instanceId = persistent.getInstanceId();
+        List<Long> idList = persistent.getIdList();
+        int status = persistent.getUsed() ? 1 : 0;
         long from = idList.get(0);
         long to = idList.get(idList.size() - 1);
         DigitDO digit = new DigitDO();
@@ -75,6 +78,7 @@ public class AlgorithmProcessor {
         digit.setFromValue(from);
         digit.setToValue(to);
         digit.setServiceInstanceId(instanceId);
+        digit.setStatus(status);
         digit.setGmtCreated(new Date());
         digitMapper.insertSelective(digit);
     }
@@ -82,10 +86,12 @@ public class AlgorithmProcessor {
     /**
      * persistence snowflake records
      * 
-     * @param instanceId
-     * @param idList
+     * @param persistent
      */
-    public void persistentSnowflake(long instanceId, List<Long> idList) {
+    public void persistentSnowflake(PersistentBO<Long> persistent) {
+        long instanceId = persistent.getInstanceId();
+        List<Long> idList = persistent.getIdList();
+        int status = persistent.getUsed() ? 1 : 0;
         int chunk = idList.size();
         Date date = new Date();
         SnowflakeDO snowflake;
@@ -96,6 +102,7 @@ public class AlgorithmProcessor {
             snowflake.setChunk(chunk);
             snowflake.setServiceInstanceId(instanceId);
             snowflake.setGValue(id);
+            snowflake.setStatus(status);
             snowflake.setGmtCreated(date);
             records.add(snowflake);
             if (index++ % Constants.BATCH_INSERT_SIZE == 0) {
@@ -111,10 +118,12 @@ public class AlgorithmProcessor {
     /**
      * persistence uuid records
      * 
-     * @param instanceId
-     * @param idList
+     * @param persistent
      */
-    public void persistentUuid(long instanceId, List<String> idList) {
+    public void persistentUuid(PersistentBO<String> persistent) {
+        long instanceId = persistent.getInstanceId();
+        List<String> idList = persistent.getIdList();
+        int status = persistent.getUsed() ? 1 : 0;
         int chunk = idList.size();
         Date date = new Date();
         List<UuidDO> records = new ArrayList<>();
@@ -124,6 +133,7 @@ public class AlgorithmProcessor {
             uuid.setChunk(chunk);
             uuid.setServiceInstanceId(instanceId);
             uuid.setGValue(id);
+            uuid.setStatus(status);
             uuid.setGmtCreated(date);
             records.add(uuid);
             if (index++ % Constants.BATCH_INSERT_SIZE == 0) {

@@ -15,7 +15,10 @@ import cc.kevinlu.snow.server.data.mapper.GroupMapper;
 import cc.kevinlu.snow.server.data.model.GroupDO;
 import cc.kevinlu.snow.server.data.model.GroupDOExample;
 import cc.kevinlu.snow.server.generate.GenerateAlgorithmFactory;
+import cc.kevinlu.snow.server.listener.pojo.PreGenerateBO;
 import cc.kevinlu.snow.server.processor.SnowflakeLockProcessor;
+import cc.kevinlu.snow.server.processor.task.CheckChunkProcessor;
+import cc.kevinlu.snow.server.processor.task.pojo.RegenerateBO;
 import cc.kevinlu.snow.server.service.SnowflakeService;
 import cc.kevinlu.snow.server.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +34,8 @@ public class SnowflakeServiceImpl implements SnowflakeService {
     private GroupMapper              groupMapper;
     @Autowired
     private ThreadPoolTaskExecutor   taskExecutor;
+    @Autowired
+    private CheckChunkProcessor      checkChunkProcessor;
     @Autowired
     private SnowflakeLockProcessor   snowflakeLockProcessor;
     @Autowired
@@ -62,7 +67,9 @@ public class SnowflakeServiceImpl implements SnowflakeService {
             GroupDO group = groupList.get(0);
 
             // generate
-            return generateAlgorithmFactory.factory(group.getMode()).generate(group, instanceCode);
+            RegenerateBO regenerate = RegenerateBO.builder().group(groupCode).mode(group.getMode())
+                    .instance(instanceCode).chunk(group.getChunk()).lastValue(group.getLastValue()).build();
+            return generateAlgorithmFactory.factory(group.getMode()).generate(regenerate);
         } catch (Exception e) {
             log.error("generate error!", e);
         } finally {
@@ -72,6 +79,9 @@ public class SnowflakeServiceImpl implements SnowflakeService {
                     snowflakeLockProcessor.releaseLock(groupCode);
                     // check next chunk
                     taskExecutor.execute(() -> {
+                        PreGenerateBO preGenerateBO = PreGenerateBO.builder().group(groupCode).instance(instanceCode)
+                                .times(0).build();
+                        checkChunkProcessor.sendChunkMessage(preGenerateBO);
                     });
                 }
             });

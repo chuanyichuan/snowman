@@ -4,6 +4,7 @@ import java.util.List;
 
 import cc.kevinlu.snow.server.generate.AbstractAlgorithm;
 import cc.kevinlu.snow.server.generate.worker.SnowflakeIdWorker;
+import cc.kevinlu.snow.server.pojo.PersistentBO;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +30,7 @@ public class SnowflakeAlgorithm extends AbstractAlgorithm<Long> {
     }
 
     @Override
-    protected void persistentDB(long instanceId, List<Long> idList) {
-        algorithmProcessor.persistentSnowflake(instanceId, idList);
+    protected void persistentDB(PersistentBO<Long> persistent) {
+        algorithmProcessor.persistentSnowflake(persistent);
     }
 }
