@@ -102,7 +102,7 @@ public class CheckChunkProcessor {
         long survivor = redisCount(regenerate);
         int size = (int) (total - survivor);
         regenerate.setChunk(size);
-        List idList = generateAlgorithmFactory.factory(regenerate.getMode()).generate(regenerate);
+        List idList = generateAlgorithmFactory.factory(regenerate.getMode()).regenerate(regenerate);
         if (CollectionUtils.isEmpty(idList)) {
             log.info("regenerate error!");
             PreGenerateBO preGenerateBO = new PreGenerateBO();

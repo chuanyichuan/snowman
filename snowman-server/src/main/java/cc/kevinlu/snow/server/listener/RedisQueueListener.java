@@ -95,9 +95,9 @@ public class RedisQueueListener implements MessageListener {
                 return;
             }
             // 检查当前是否需要扩容
-            RegenerateBO regenerate = RegenerateBO.builder().group(groupCode).mode(group.getMode())
-                    .instance(instanceCode).chunk(group.getChunk()).lastValue(group.getLastValue())
-                    .times(preGenerateBO.getTimes()).build();
+            RegenerateBO regenerate = RegenerateBO.builder().groupId(group.getId()).group(groupCode)
+                    .mode(group.getMode()).instance(instanceCode).chunk(group.getChunk())
+                    .lastValue(group.getLastValue()).times(preGenerateBO.getTimes()).build();
             boolean redo = checkChunkProcessor.preRegenerate(regenerate);
             if (redo) {
                 // 生成ID

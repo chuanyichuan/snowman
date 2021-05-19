@@ -67,8 +67,9 @@ public class SnowflakeServiceImpl implements SnowflakeService {
             GroupDO group = groupList.get(0);
 
             // generate
-            RegenerateBO regenerate = RegenerateBO.builder().group(groupCode).mode(group.getMode())
-                    .instance(instanceCode).chunk(group.getChunk()).lastValue(group.getLastValue()).build();
+            RegenerateBO regenerate = RegenerateBO.builder().groupId(group.getId()).group(groupCode)
+                    .mode(group.getMode()).instance(instanceCode).chunk(group.getChunk())
+                    .lastValue(group.getLastValue()).build();
             return generateAlgorithmFactory.factory(group.getMode()).generate(regenerate);
         } catch (Exception e) {
             log.error("generate error!", e);

@@ -12,4 +12,10 @@ public final class Constants {
     public static final String CHECK_CHUNK_TOPIC        = "check_chunk_queue";
 
     public static final String CHECK_CHUNK_LOCK_PATTERN = "check_chunk_lock_%s";
+
+    /**
+     * fill with groupId and instanceId and mode
+     */
+    public static final String CACHE_ID_PATTERN         = "cache_id_%d_%d_%d";
+
 }

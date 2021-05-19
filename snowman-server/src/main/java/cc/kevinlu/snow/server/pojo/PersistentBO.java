@@ -25,6 +25,8 @@ public class PersistentBO<T> implements Serializable {
      */
     private Boolean used;
 
+    private Integer mode;
+
     @Tolerate
     public PersistentBO() {
     }

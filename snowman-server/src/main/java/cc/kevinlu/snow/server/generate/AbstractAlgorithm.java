@@ -9,6 +9,7 @@ import cc.kevinlu.snow.client.exceptions.ParamIllegalException;
 import cc.kevinlu.snow.client.exceptions.ValueTooBigException;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
+import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
 import cc.kevinlu.snow.server.processor.task.pojo.RegenerateBO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,10 +81,23 @@ public abstract class AbstractAlgorithm<T> {
         persistentBO.setInstanceId(instanceId);
         persistentBO.setIdList(idList);
         persistentBO.setUsed(Objects.equals(regenerate.getTimes(), 0));
+        persistentBO.setMode(regenerate.getMode());
         persistentDB(persistentBO);
 
         recordSnowTimes(instanceId);
         recordLastValue(regenerate.getGroupId(), idList.get(idList.size() - 1));
+        return idList;
+    }
+
+    /**
+     * regenerate id
+     * 
+     * @param regenerate
+     * @return
+     */
+    public List<T> regenerate(RegenerateBO regenerate) {
+        List<T> idList = generate(regenerate);
+        asyncToCache(regenerate);
         return idList;
     }
 
@@ -104,7 +118,9 @@ public abstract class AbstractAlgorithm<T> {
      *
      * @param persistent
      */
-    protected abstract void persistentDB(PersistentBO<T> persistent);
+    protected void persistentDB(PersistentBO<T> persistent) {
+        algorithmProcessor.persistentToDb(persistent);
+    }
 
     /**
      * record last value
@@ -123,6 +139,19 @@ public abstract class AbstractAlgorithm<T> {
      */
     private void recordSnowTimes(long instanceId) {
         algorithmProcessor.recordSnowTimes(instanceId);
+    }
+
+    /**
+     * async id to cache
+     * 
+     * @param regenerate
+     */
+    public void asyncToCache(RegenerateBO regenerate) {
+        AsyncCacheBO asyncCacheBO = new AsyncCacheBO();
+        asyncCacheBO.setGroupId(regenerate.getGroupId());
+        asyncCacheBO.setInstanceId(instanceId(regenerate.getGroupId(), regenerate.getInstance()));
+        asyncCacheBO.setMode(regenerate.getMode());
+        algorithmProcessor.asyncDataToCache(asyncCacheBO);
     }
 
 }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import cc.kevinlu.snow.server.generate.AbstractAlgorithm;
 import cc.kevinlu.snow.server.generate.worker.RandomWorker;
-import cc.kevinlu.snow.server.pojo.PersistentBO;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,8 +25,4 @@ public class UuidAlgorithm extends AbstractAlgorithm<String> {
         }
     }
 
-    @Override
-    protected void persistentDB(PersistentBO<String> persistent) {
-        algorithmProcessor.persistentUuid(persistent);
-    }
 }
