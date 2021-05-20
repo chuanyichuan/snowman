@@ -14,7 +14,8 @@
 
     <modules>
         <module>snowman-client</module>
-        <module>snowman-server</module>
+        <module>snowman-spring-boot-autoconfigure</module>
+        <module>snowman-spring-boot-starter</module>
     </modules>
 
     <dependencies>
