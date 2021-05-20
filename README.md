@@ -3,20 +3,16 @@ snowflake（分布式ID生成器），基于Twitter的Snowflake理论
 
 支持客户端分组按块（chunk）生成算法，当前支持的算法包括UUID、DIGIT递增顺序号、SNOWFLAKE（雪花算法）
 
-![功能脑图](docs/snowman.png)
-
-    
 ## 项目说明
 
 - ***JDK 版本要求: `JDK8+`*** 
 
-- 支持的后端
-  - MySQL
-
-
-
 ## 核心概念
-区块chunk- 一个区块对应一个客户端集群，集群内节点共享，代表每次生成的ID数量
+* 服务名称name- 服务的名称
+* 区块chunk- 一个区块对应一个客户端集群，集群内节点共享，代表每次生成的ID数量
+* 服务组group- 服务独有唯一标识
+* 服务实例ID- 服务组中每一个运行实例的唯一标识(集群)
+* ID策略mode- 可选值，可选项为digit、snowflake、uuid，默认为digit
 
 
 ## 使用方法
@@ -47,7 +43,7 @@ snowman.prop.server-id=1
 server.port=8081
 ```
 使用
- ```java
+```java
 import cc.kevinlu.snow.autoconfigure.SnowmanClient;
 
 @RestController
@@ -62,18 +58,5 @@ public class TestController {
     }
 }
 ```
-> `maven`依赖等详细配置请查看[examples](https://github.com/chuanyichuan/snowman-example)目录下的演示项目
-
-
-
- ## 贡献指南
-
- 代码要求：
-  - 统一风格，包含注释、代码缩进等与本项目保持一致
-  - 保持代码整洁，比如注释掉的代码块等垃圾代码应该删除
-  - 严格控制外部依赖，如果没有必要，请不要引入外部依赖
-  - 请在类注释中保留你的作者信息，请不要害羞
-
-
-
-
+> * 服务端请查看[snowman-server](https://github.com/chuanyichuan/snowman-server)
+> * `maven`依赖等详细配置请查看[examples](https://github.com/chuanyichuan/snowman-example)目录下的演示项目
