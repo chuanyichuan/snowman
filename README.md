@@ -58,5 +58,5 @@ public class TestController {
     }
 }
 ```
-> 服务端请查看[snowman-server](https://github.com/chuanyichuan/snowman-server)
-> `maven`依赖等详细配置请查看[examples](https://github.com/chuanyichuan/snowman-example)目录下的演示项目
+> * 服务端请查看[snowman-server](https://github.com/chuanyichuan/snowman-server)
+> * `maven`依赖等详细配置请查看[examples](https://github.com/chuanyichuan/snowman-example)目录下的演示项目
