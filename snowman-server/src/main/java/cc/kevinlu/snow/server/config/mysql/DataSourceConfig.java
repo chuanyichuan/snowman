@@ -60,7 +60,9 @@ public class DataSourceConfig {
 
     @Bean(name = "code_transaction")
     public PlatformTransactionManager prodTransactionManager(@Qualifier("dataSourceCode") DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
+        DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager(dataSource);
+        dataSourceTransactionManager.setNestedTransactionAllowed(true);
+        return dataSourceTransactionManager;
     }
 
 }

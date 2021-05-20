@@ -51,14 +51,13 @@ public class AsyncTaskProcessor {
         });
     }
 
-    public void digitStatus(List records) {
+    public void digitStatus(Long id) {
         taskExecutor.execute(() -> {
             DigitDO digitDO = new DigitDO();
             digitDO.setStatus(StatusEnums.USED.getStatus());
+            digitDO.setId(id);
 
-            DigitDOExample example = new DigitDOExample();
-            example.createCriteria().andIdIn(records);
-            digitMapper.updateByExampleSelective(digitDO, example);
+            digitMapper.updateByPrimaryKeySelective(digitDO);
         });
     }
 

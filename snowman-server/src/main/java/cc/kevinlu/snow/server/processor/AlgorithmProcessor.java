@@ -2,10 +2,12 @@ package cc.kevinlu.snow.server.processor;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
+import cc.kevinlu.snow.server.config.Constants;
 import cc.kevinlu.snow.server.data.mapper.BatchMapper;
 import cc.kevinlu.snow.server.data.mapper.GroupMapper;
 import cc.kevinlu.snow.server.data.model.GroupDO;
@@ -16,6 +18,7 @@ import cc.kevinlu.snow.server.processor.algorithm.SnowflakePersistentProcessor;
 import cc.kevinlu.snow.server.processor.algorithm.UuidPersistentProcessor;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
 import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
+import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -33,6 +36,8 @@ public class AlgorithmProcessor {
     private SnowflakePersistentProcessor snowflakePersistentProcessor;
     @Autowired
     private DigitPersistentProcessor     digitPersistentProcessor;
+    @Autowired
+    private RedisProcessor               redisProcessor;
 
     @Autowired
     private GroupMapper                  groupMapper;
@@ -75,6 +80,9 @@ public class AlgorithmProcessor {
         group.setId(groupId);
         group.setLastValue(value);
         groupMapper.updateByPrimaryKeySelective(group);
+
+        String key = String.format(Constants.GROUP_RECENT_MAX_VALUE_ITEM_PATTERN, groupId);
+        redisProcessor.hset(Constants.GROUP_RECENT_MAX_VALUE_QUEUE, key, value);
     }
 
     public void asyncDataToCache(AsyncCacheBO asyncCacheBO) {
@@ -98,5 +106,16 @@ public class AlgorithmProcessor {
         long instanceId = instanceCacheProcessor.getInstanceId(acquireBO.getGroupId(), acquireBO.getInstanceCode());
         acquireBO.setInstanceId(instanceId);
         return getProcessor(acquireBO.getMode()).getRecords(acquireBO);
+    }
+
+    public String queryGroupDigitLastValue(Long groupId) {
+        String key = String.format(Constants.GROUP_RECENT_MAX_VALUE_ITEM_PATTERN, groupId);
+        String maxValue = (String) redisProcessor.hget(Constants.GROUP_RECENT_MAX_VALUE_QUEUE, key);
+        if (StringUtils.isBlank(maxValue)) {
+            GroupDO group = groupMapper.selectByPrimaryKey(groupId);
+            maxValue = group.getLastValue();
+            redisProcessor.hset(Constants.GROUP_RECENT_MAX_VALUE_QUEUE, key, maxValue);
+        }
+        return maxValue;
     }
 }
