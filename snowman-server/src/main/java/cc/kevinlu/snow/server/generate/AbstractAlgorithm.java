@@ -39,7 +39,8 @@ public abstract class AbstractAlgorithm<T> {
      */
     private Long fromValue(RegenerateBO regenerate) {
         if (IdAlgorithmEnums.DIGIT.getAlgorithm() == regenerate.getMode()) {
-            long lastValue = Long.parseLong(regenerate.getLastValue());
+            // query newest value from cache or db
+            long lastValue = Long.parseLong(algorithmProcessor.queryGroupDigitLastValue(regenerate.getGroupId()));
             if (lastValue >= Long.MAX_VALUE - regenerate.getChunk()) {
                 throw new ValueTooBigException("ID has been used up!");
             }

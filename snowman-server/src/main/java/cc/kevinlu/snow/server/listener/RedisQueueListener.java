@@ -6,6 +6,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import com.alibaba.fastjson.JSONObject;
 
 import cc.kevinlu.snow.server.config.Constants;
 import cc.kevinlu.snow.server.data.mapper.GroupMapper;
@@ -39,12 +45,14 @@ public class RedisQueueListener {
     private CheckChunkProcessor         checkChunkProcessor;
     @Autowired
     private Jackson2JsonRedisSerializer jacksonSerializer;
+    @Autowired
+    private RedisQueueListener          redisQueueListener;
 
     public void onMessage(String content) {
         log.info("receive check message from redis: , content = [{}]", content);
         PreGenerateBO preGenerateBO = (PreGenerateBO) jacksonSerializer
                 .deserialize(content.getBytes(StandardCharsets.UTF_8));
-        checkChunkSize(preGenerateBO);
+        redisQueueListener.checkChunkSize(preGenerateBO);
     }
 
     /**
@@ -52,12 +60,14 @@ public class RedisQueueListener {
      * 
      * @param preGenerateBO
      */
-    private void checkChunkSize(PreGenerateBO preGenerateBO) {
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.NESTED, transactionManager = "code_transaction")
+    public void checkChunkSize(PreGenerateBO preGenerateBO) {
         String groupCode = preGenerateBO.getGroup();
         String instanceCode = preGenerateBO.getInstance();
         String lock = String.format(Constants.CHECK_CHUNK_LOCK_PATTERN, groupCode);
         int time = 0;
-        while (!redisProcessor.tryLockWithLua(lock, instanceCode, 1000)) {
+        String value = Thread.currentThread().getId() + "_" + instanceCode;
+        while (!redisProcessor.tryLockWithLua(lock, value, 3000000)) {
             log.warn("[{}] - [{}] 第[{}]次尝试加锁失败", groupCode, instanceCode, ++time);
             if (time >= 3) {
                 return;
@@ -70,7 +80,7 @@ public class RedisQueueListener {
 
         try {
             // 校验数据
-            log.warn("[{}] - [{}] 第[{}]次尝试加锁成功", groupCode, instanceCode, ++time);
+            log.warn("[{}] - [{}] 第[{}]次尝试加锁成功", groupCode, value, ++time);
             GroupDOExample groupExample = new GroupDOExample();
             groupExample.createCriteria().andGroupCodeEqualTo(groupCode);
             groupExample.setOrderByClause("id asc limit 1");
@@ -92,6 +102,7 @@ public class RedisQueueListener {
             RegenerateBO regenerate = RegenerateBO.builder().groupId(group.getId()).group(groupCode)
                     .mode(group.getMode()).instance(instanceCode).chunk(group.getChunk())
                     .lastValue(group.getLastValue()).times(preGenerateBO.getTimes()).build();
+            log.info("regenerate-object = [{}]", JSONObject.toJSONString(regenerate));
             boolean redo = checkChunkProcessor.preRegenerate(regenerate);
             if (redo) {
                 // 生成ID
@@ -101,8 +112,13 @@ public class RedisQueueListener {
         } catch (Exception e) {
             log.warn("regenerate error! msg = [{}]", e.getMessage(), e);
         } finally {
-            redisProcessor.releaseLock(lock, instanceCode);
-            log.warn("[{}] - [{}] 释放锁成功", groupCode, instanceCode);
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void afterCommit() {
+                    redisProcessor.releaseLock(lock, value);
+                    log.warn("[{}] - [{}] 释放锁成功", groupCode, instanceCode);
+                }
+            });
         }
     }
 }

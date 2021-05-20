@@ -20,6 +20,7 @@ import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
 import cc.kevinlu.snow.server.processor.task.CheckChunkProcessor;
+import cc.kevinlu.snow.server.processor.task.RedisMessageSender;
 import cc.kevinlu.snow.server.processor.task.pojo.RegenerateBO;
 import cc.kevinlu.snow.server.service.SnowflakeService;
 import cc.kevinlu.snow.server.utils.CollectionUtils;
@@ -52,16 +53,19 @@ public class SnowflakeServiceImpl implements SnowflakeService {
         // acquire lock
         int lockTimes = 0;
         String key = String.format(Constants.CACHE_GENERATE_LOCK_PATTERN, groupCode);
-        while (!redisProcessor.tryLockWithLua(key, instanceCode, Constants.DEFAULT_TIMEOUT)) {
+        String value = Thread.currentThread().getId() + "_" + instanceCode;
+        while (!redisProcessor.tryLockWithSet(key, value, Constants.DEFAULT_TIMEOUT)) {
+            log.warn("[{}] - [{}] 第[{}]次尝试加锁失败", groupCode, instanceCode, ++lockTimes);
+            if (lockTimes > 3) {
+                throw new CannotAcquireLockException("acquire lock timeout!");
+            }
             try {
                 Thread.sleep(100L);
             } catch (InterruptedException e) {
             }
-            if (lockTimes++ > 3) {
-                throw new CannotAcquireLockException("acquire lock timeout!");
-            }
         }
         try {
+            log.warn("[{}] - [{}] 第[{}]次尝试加锁成功", groupCode, value, ++lockTimes);
             GroupDOExample groupExample = new GroupDOExample();
             groupExample.createCriteria().andGroupCodeEqualTo(groupCode);
             groupExample.setOrderByClause("id desc limit 1");
@@ -89,13 +93,16 @@ public class SnowflakeServiceImpl implements SnowflakeService {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
                 @Override
                 public void afterCommit() {
-                    redisProcessor.releaseLock(key, instanceCode);
+                    redisProcessor.releaseLock(key, value);
+                    log.warn("[{}] - [{}] 释放锁成功", groupCode, instanceCode);
+                }
+
+                @Override
+                public void afterCompletion(int status) {
                     // check next chunk
-                    taskExecutor.execute(() -> {
-                        PreGenerateBO preGenerateBO = PreGenerateBO.builder().group(groupCode).instance(instanceCode)
-                                .times(1).build();
-                        checkChunkProcessor.sendChunkMessage(preGenerateBO);
-                    });
+                    PreGenerateBO preGenerateBO = PreGenerateBO.builder().group(groupCode).instance(instanceCode)
+                            .times(1).build();
+                    taskExecutor.execute(new RedisMessageSender(redisProcessor, preGenerateBO));
                 }
             });
         }

@@ -500,6 +500,21 @@ public class RedisProcessor {
      * 获取list缓存的内容
      *
      * @param key   键
+     * @return
+     */
+    public Object lPop(String key) {
+        try {
+            return redisTemplate.opsForList().leftPop(key);
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    /**
+     * 获取list缓存的内容
+     *
+     * @param key   键
      * @param start 开始
      * @param end   结束 0 到 -1代表所有值
      * @return
@@ -688,12 +703,23 @@ public class RedisProcessor {
             Long result = redisTemplate.execute(LOCK_LUA_SCRIPTS, Collections.singletonList(key), value, times);
 
             //判断是否成功
-            //            return redisTemplate.opsForValue().setIfAbsent(key, value, times, TimeUnit.MILLISECONDS);
             return Objects.equals(result, 1L);
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
             return false;
         }
+    }
+
+    /**
+     * 使用set key value nx ex实现分布式锁
+     *
+     * @param key
+     * @param value
+     * @param times
+     * @return
+     */
+    public boolean tryLockWithSet(String key, String value, int times) {
+        return tryLockWithSet(key, value, times, TimeUnit.MILLISECONDS);
     }
 
     /**

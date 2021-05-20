@@ -17,7 +17,7 @@ logging:
     org.hibernate: INFO
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
-    cc.kevinlu.snow.server.data.mapper: DEBUG
+    cc.kevinlu.snow.server.data.mapper: INFO
 
 spring:
   redis:

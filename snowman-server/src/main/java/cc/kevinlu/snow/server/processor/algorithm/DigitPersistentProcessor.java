@@ -11,7 +11,6 @@ import cc.kevinlu.snow.server.config.Constants;
 import cc.kevinlu.snow.server.data.mapper.BatchMapper;
 import cc.kevinlu.snow.server.data.mapper.DigitMapper;
 import cc.kevinlu.snow.server.data.model.DigitDO;
-import cc.kevinlu.snow.server.data.model.DigitDOExample;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
 import cc.kevinlu.snow.server.pojo.enums.StatusEnums;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
@@ -74,22 +73,18 @@ public class DigitPersistentProcessor implements PersistentProcessor<Long> {
     public List<Long> getRecords(RecordAcquireBO acquireBO) {
         String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, acquireBO.getGroupId(), acquireBO.getInstanceId(),
                 acquireBO.getMode());
-        List records = redisProcessor.lGet(key, 0, 0);
-        if (CollectionUtils.isEmpty(records)) {
+        Object record = redisProcessor.lPop(key);
+        if (record == null) {
             return null;
         }
-        DigitDOExample example = new DigitDOExample();
-        example.createCriteria().andIdIn(records);
-        List<DigitDO> dataList = digitMapper.selectByExample(example);
+        Long recordId = Long.valueOf(String.valueOf(record));
+        DigitDO data = digitMapper.selectByPrimaryKey(recordId);
 
         List<Long> result = new ArrayList<>();
-        for (DigitDO digitDO : dataList) {
-            for (long i = digitDO.getFromValue(); i <= digitDO.getToValue(); i++) {
-                result.add(i);
-            }
+        for (long i = data.getFromValue(); i <= data.getToValue(); i++) {
+            result.add(i);
         }
-        asyncTaskProcessor.digitStatus(records);
-        redisProcessor.lTrim(key, 1, -1);
+        asyncTaskProcessor.digitStatus(recordId);
         return result;
     }
 
