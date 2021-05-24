@@ -14,17 +14,17 @@ import org.springframework.web.bind.annotation.PathVariable;
  * <p>For Example:</p>
  * <pre>
  *    {@code @Autowired}
- *     private SnowflakeClient client;
+ *     private SnowmanClient client;
  *     
- *     public void method(String groupCode) {
- *         List&lt;Long&gt; idList = client.generate(groupCode);
+ *     public void method(String groupCode, String instanceCode) {
+ *         List&lt;Long&gt; idList = client.generate(groupCode, instanceCode);
  *     }
  * </pre>
  * 
  * @author chuan
  */
-@FeignClient(name = "snowman", contextId = "snowflake")
-public interface SnowflakeClient {
+@FeignClient(name = "snowman", contextId = "snowman-client")
+public interface SnowmanClient {
 
     /**
      * generate function

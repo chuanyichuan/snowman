@@ -10,7 +10,8 @@ public enum IdAlgorithmEnums {
      */
     DIGIT(1),
     SNOWFLAKE(2),
-    UUID(3);
+    UUID(3),
+    TIMESTAMP(4);
 
     private int algorithm;
 
