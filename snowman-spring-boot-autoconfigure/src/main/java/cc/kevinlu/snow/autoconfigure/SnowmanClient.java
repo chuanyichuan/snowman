@@ -110,6 +110,8 @@ public class SnowmanClient {
             return IdAlgorithmEnums.SNOWFLAKE;
         } else if ("uuid".equalsIgnoreCase(mode)) {
             return IdAlgorithmEnums.UUID;
+        } else if ("timestamp".equalsIgnoreCase(mode)) {
+            return IdAlgorithmEnums.TIMESTAMP;
         } else {
             return IdAlgorithmEnums.DIGIT;
         }

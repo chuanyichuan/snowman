@@ -90,6 +90,10 @@
         {
           "value": "uuid",
           "description": "使用UUID算法生成ID"
+        },
+        {
+          "value": "timestamp",
+          "description": "使用时间戳算法生成ID"
         }
       ]
     },
